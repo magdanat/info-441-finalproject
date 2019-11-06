@@ -6,7 +6,7 @@
 
 Our target audience for our project is mainly UW students who want to take a break from studying by playing a simple game with friends. We envision it will be UW students using our application because our project is intended to be UW themed.
 
-Our audience would want to use our application primarily for fun. Because our project is a game, players will want to get an enjoyable experience that they can share with whomever they are playing with. 
+Our audience would want to use our application primarily for fun. Because our project is a game, players will want to get an enjoyable experience that they can share with whomever they are playing with.
 
 As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a game because of how the flow of data is going to be handled between players in the game. Data between the person drawing on the canvas has to be sent to other participating players so that players can see what is being drawn live. Answers sent by players also has to be communicated to others as well. This handling of data and ensuring that the same data is displayed amongst everyone involved in the game will prove to be a challenging aspect as data will need to be communicated appropriately.  Proper implementation 
 
@@ -26,7 +26,7 @@ https://www.lucidchart.com/invitations/accept/96bd7abc-54f0-4425-ac9e-17ba82aed5
 Our minimal viable product would require P0, P1, P2, and P3. 
 
 **Technical Implementation:**\
-* **P0**: In order to allow players to create a new game, we need to have a home page where one player can specify the lobby name, max amount of players, number of rounds and drawing time limit. 
+* **P0**: In order to allow players to create a new game, we need to have a home page where one player can specify the lobby name, max amount of players, number of rounds and drawing time limit.
    - This will require a client side page which we will create using HTML, CSS and JavaScript. This will also require a database that stores game information. We will create our database in a Docker container and host it in a droplet on Digital Ocean.
 * **P1**: In order to allow a player to draw, we need to have a drawing board limited to the user drawing. Other users would not be able to draw on the board if they are not the drawer. In addition, the board will be constantly updated so other users can see what is being drawn.
    - This will require React in order to create the drawing board and user UI. While drawing the user will constantly be sending PATCH requests to update the board. The drawing will be saved as coordinates in our database.
@@ -48,47 +48,47 @@ Docker will be used to help manage both the web server that players will interac
 ### API Design
 
 #### Endpoints
-‘/v1/player’ 
-GET: Get player information
-`200`: Successfully retrieves player information
-`401`: Cannot verify ID
-`403`: Cannot authenticate player or forbidden
-`500`: Internal server error
-POST: Add new player
-`201`: `application/json`. Successfully posts new player
-`401`: Cannot verify player/ID
-`500`: Internal server error
-PATCH: Update new player
-`201`: `application/json`. Successfully updates a player
-`401`: Cannot verify player/ID
-`500`: Internal server error
+‘/v1/player’
+    * GET: Get player information
+        - `200`: Successfully retrieves player information
+        -  `401`: Cannot verify ID
+        -  `403`: Cannot authenticate player or forbidden
+        -  `500`: Internal server error
+    * POST: Add new player
+        - `201`: `application/json`. Successfully posts new player
+        - `401`: Cannot verify player/ID
+        - `500`: Internal server error
+    * PATCH: Update new player
+        - `201`: `application/json`. Successfully updates a player
+        - `401`: Cannot verify player/ID
+        - `500`: Internal server error
 ‘/v1/player/record’
-GET; Get record of player stats (win/loss record)
-`200`: Successfully retrieves record of player stats
-`401`: Cannot verify players id_value or no id_value is provided
-`500`: Server Error 
-POST; Create new record
-`201`: Successfully created new player record
-`401`: Cannot verify players id_value or no id_value is provided
-`500`: Server Error 
-PATCH; Update player record
-`201`: Successfully updated player record
-`401`: Cannot verify players id_value or no id_value is provided
-`500`: Server Error 
+    * GET; Get record of player stats (win/loss record)
+        - `200`: Successfully retrieves record of player stats
+        - `401`: Cannot verify players id_value or no id_value is provided
+        - `500`: Server Error 
+    * POST; Create new record
+        - `201`: Successfully created new player record
+        - `401`: Cannot verify players id_value or no id_value is provided
+        - `500`: Server Error 
+    * PATCH; Update player record
+        - `201`: Successfully updated player record
+        - `401`: Cannot verify players id_value or no id_value is provided
+        - `500`: Server Error 
 ‘/v1/game’
-GET; Get current game information
-`200`: Successfully retrieves current game information
-`401`: Attempts to access game which player is not part of
-`500`: Internal server error
-POST; Create a new game
-`201`: Successfully creates a new game
-`401`: Cannot verify players id_value
-`500`: Internal server error
-PATCH; Update current game information including score and messages
-`201`: `application/json`. Successfully updates a game
-`401`: player attempts to update game information not relating to them
-Such as drawer, drawing_board, messages, or other people’s game_player
-`500`: Internal server error
+    * GET; Get current game information
+        - `200`: Successfully retrieves current game information
+        - `401`: Attempts to access game which player is not part of
+        - `500`: Internal server error
+    * POST; Create a new game
+        - `201`: Successfully creates a new game
+        - `401`: Cannot verify players id_value
+        - `500`: Internal server error
+    * PATCH; Update current game information including score and messages
+        - `201`: `application/json`. Successfully updates a game
+        - `401`: player attempts to update game information not relating to them
+                Such as drawer, drawing_board, messages, or other people’s game_player
+        - `500`: Internal server error
 
 #### Models
 For our data store we will be utilizing MySQL DB.
