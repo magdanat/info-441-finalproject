@@ -2,7 +2,8 @@
 
 ## Project Description
 
-**UW Scribble** is intended to be a multiplayer-game that is an online version on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word.  
+**UW Scribble** is intended to be a online multiplayer game which is based on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word. Based on the amount of time a player takes to guess the correct answer, they will be rewarded points.\
+Ex. The faster a player guesses the correct answers, the more points they will receive.
 
 Our target audience for our project is mainly UW students who want to take a break from studying by playing a simple game with friends. We envision it will be UW students using our application because our project is intended to be UW themed.
 
