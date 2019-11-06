@@ -41,8 +41,6 @@ Our minimal viable product would require P0, P1, P2, and P3.
 * **P5**: In order to implement the message board, players will need to have a chat room so that they guess. Players will be able to view other people’s guesses in the chat room as well. Players should not be able to delete their chat or other people’s chats. Correct guesses should be hidden so that other players can continue to guess.
   * To implement this function we would need a message board with constantly updates using GET requests. Players who send messages would use a PATCH request to update the message board.
 
-### Infrastructure
-
 ### API Design
 
 #### Endpoints
