@@ -2,13 +2,14 @@
 
 ## Project Description
 
-**UW Scribble** is intended to be a multiplayer-game that is an online version on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word.  
+**UW Scribble** is intended to be a online multiplayer game which is based on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word. Based on the amount of time a player takes to guess the correct answer, they will be rewarded points.\
+Ex. The faster a player guesses the correct answer, the more points they will receive.
 
 Our target audience for our project is mainly UW students who want to take a break from studying by playing a simple game with friends. We envision it will be UW students using our application because our project is intended to be UW themed.
 
 Our audience would want to use our application primarily for fun. Because our project is a game, players will want to get an enjoyable experience that they can share with whomever they are playing with.
 
-As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a game because of how the flow of data is going to be handled between players in the game. Data between the person drawing on the canvas has to be sent to other participating players so that players can see what is being drawn live. Answers sent by players also has to be communicated to others as well. This handling of data and ensuring that the same data is displayed amongst everyone involved in the game will prove to be a challenging aspect as data will need to be communicated appropriately.  Proper implementation
+As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a game because of how the flow of data is going to be handled between players in the game. Data between the person drawing on the canvas has to be sent to other participating players so that players can see what is being drawn live. Answers sent by players also has to be communicated to others as well. This handling of data and ensuring that the same data is displayed amongst everyone involved in the game will prove to be a challenging aspect as data will need to be communicated appropriately. Our implementation will consist of **React** for our frontend, Google's **Go** for our backend, and finally **MySQL** for our backend database.
 
 ## Technical Description
 
@@ -91,7 +92,7 @@ Docker will be used to help manage both the web server that players will interac
 
 #### Models
 
-For our data store we will be utilizing MySQL DB.
+For our data store we will be utilizing **MySQL** DB.
 
 *players*
 ‘player’: players will be represented in the database.
