@@ -9,7 +9,7 @@ Our target audience for our project is mainly UW students who want to take a bre
 
 Our audience would want to use our application primarily for fun. Because our project is a game, players will want to get an enjoyable experience that they can share with whomever they are playing with.
 
-As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a game because of how the flow of data is going to be handled between players in the game. Data between the person drawing on the canvas has to be sent to other participating players so that players can see what is being drawn live. Answers sent by players also has to be communicated to others as well. This handling of data and ensuring that the same data is displayed amongst everyone involved in the game will prove to be a challenging aspect as data will need to be communicated appropriately.  Proper implementation 
+As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a game because of how the flow of data is going to be handled between players in the game. Data between the person drawing on the canvas has to be sent to other participating players so that players can see what is being drawn live. Answers sent by players also has to be communicated to others as well. This handling of data and ensuring that the same data is displayed amongst everyone involved in the game will prove to be a challenging aspect as data will need to be communicated appropriately. Our implementation will consist of **React** for our frontend, Google's **Go** for our backend, and finally **MySQL** for our backend database.
 
 ## Technical Description
 ![image](./project_proposal.jpeg)
@@ -91,7 +91,7 @@ Docker will be used to help manage both the web server that players will interac
    - `500`: Internal server error
 
 #### Models
-For our data store we will be utilizing MySQL DB.
+For our data store we will be utilizing **MySQL** DB.
 
 *players*
 ‘player’: players will be represented in the database. 
