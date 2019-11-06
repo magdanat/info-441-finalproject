@@ -102,10 +102,10 @@ For our data store we will be utilizing **MySQL** DB.
 {
      “id”: “id_value”,
      “email”: “email”,
-     “playername”: “player_name”
+     “playerName”: “player_name”
      “hash”: “password_hash”,
-     “firstname”: ”first_name”,
-     “lastname”: ”last_name”
+     “firstName”: ”first_name”,
+     “lastName”: ”last_name”
 }
 ```
 
@@ -133,7 +133,7 @@ For our data store we will be utilizing **MySQL** DB.
 
 ```go
 {
-     “Id”: “id_value”,
+     “id”: “id_value”,
      “createdAt”: “time_created”,
      “lobbyName”: “lobby_name”,
      “maxPlayers”: “max_players”,
@@ -154,7 +154,7 @@ For our data store we will be utilizing **MySQL** DB.
 
 ```go
 {
-     “Id”: “id_value”,
+     “id”: “id_value”,
      “game”: “game_id”,
      “player: player_id”,
      “score”: “score_value”
@@ -167,7 +167,7 @@ For our data store we will be utilizing **MySQL** DB.
 
 ```go
 {
-     “Id”: “id_value”,
+     “id”: “id_value”,
      “coordinates”: “list_of_coordinates”
 }
 ```
@@ -178,7 +178,7 @@ For our data store we will be utilizing **MySQL** DB.
 
 ```go
 {
-     “Id”: “id_value”,
+     “id”: “id_value”,
      “word”: “word”
 }
 ```
@@ -189,7 +189,7 @@ For our data store we will be utilizing **MySQL** DB.
 
 ```go
  {
-     “Id”: “id_value”,
+     “id”: “id_value”,
      “user”: “user_id”,
      “game”: “game_id”
      “message”: “message”,
