@@ -2,7 +2,7 @@
 
 ## Project Description
 
-**UW Scribble** is intended to be a online multiplayer game which is based on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word. Based on the amount of time a player takes to guess the correct answer, they will be rewarded points.\
+**UW Scribble** is intended to be an online multiplayer game which is based on certain aspects of pictionary. One player will be given a word to draw while other players in the same instance will attempt to guess the word. Based on the amount of time a player takes to guess the correct answer, they will be rewarded points.\
 Ex. The faster a player guesses the correct answer, the more points they will receive.
 
 Our target audience for our project is mainly UW students who want to take a break from studying by playing a simple game with friends. We envision it will be UW students using our application because our project is intended to be UW themed.
@@ -42,8 +42,6 @@ Our minimal viable product would require P0, P1, P2, and P3.
   * To implement this function we would need a message board with constantly updates using GET requests. Players who send messages would use a PATCH request to update the message board.
 
 ### Infrastructure
-
-Docker will be used to help manage both the web server that players will interact with and another container for storage of information. Players will interact with the web client and those interactions will be shared with other players within the same instance. Requests will be sent to a separate server container for access control.
 
 ### API Design
 
