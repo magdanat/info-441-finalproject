@@ -157,18 +157,22 @@ For our data store we will be utilizing MySQL DB.
 
 *Words*
 ‘word’: Word will be represented in the database as follows. This is the model that will be returned when a client. We would also consider making the words UW themed to appeal to our target audience.
+```
 {
      “Id”: “id_value”,
      “word”: “word”
 }
+```
 
 *Message*
 ‘Message’: Message will represent a message that is sent in a chat room in each game. Clients send guesses as messages in order to guess the word. They can also send messages unrelated to the word as well.
+```
  {
      “Id”: “id_value”,
      “user”: “user_id”,
      “game”: “game_id”
      “message”: “message”,
 }
+```
 
 
