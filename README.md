@@ -94,7 +94,8 @@ Docker will be used to help manage both the web server that players will interac
 
 For our data store we will be utilizing **MySQL** DB.
 
-*players*
+#### Players
+
 ‘player’: players will be represented in the database.
 
 ```go
@@ -119,7 +120,15 @@ For our data store we will be utilizing **MySQL** DB.
 
 ‘credential_update’: This is the model when a player wants to change their login information.
 
-*Games*
+```go
+{
+     “oldPassword”: ”old_pass”,
+     “newPassword”: “new_pass”
+}
+```
+
+#### Game
+
 ‘game_instance’: Game instance will be represented in the database as follows. This is the model that will be returned when a client requests, creates, or updates any game instance.
 
 ```go
@@ -152,8 +161,9 @@ For our data store we will be utilizing **MySQL** DB.
 }
 ```
 
-*Drawing Board*
-`drawing_board`: This would represent a single drawing board with all the coordinates corresponding to where each mark is for the drawing
+#### Drawing Board
+
+'drawing_board': This would represent a single drawing board with all the coordinates corresponding to where each mark is for the drawing
 
 ```go
 {
@@ -162,7 +172,8 @@ For our data store we will be utilizing **MySQL** DB.
 }
 ```
 
-*Words*
+#### Words
+
 ‘word’: Word will be represented in the database as follows. This is the model that will be returned when a client. We would also consider making the words UW themed to appeal to our target audience.
 
 ```go
@@ -172,8 +183,9 @@ For our data store we will be utilizing **MySQL** DB.
 }
 ```
 
-*Message*
-‘Message’: Message will represent a message that is sent in a chat room in each game. Clients send guesses as messages in order to guess the word. They can also send messages unrelated to the word as well.
+#### Message
+
+‘message’: Message will represent a message that is sent in a chat room in each game. Clients send guesses as messages in order to guess the word. They can also send messages unrelated to the word as well.
 
 ```go
  {
