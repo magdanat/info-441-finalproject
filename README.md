@@ -12,7 +12,6 @@ As developers we want to build this application because we think this will be a 
 
 ## Technical Description
 
-
 https://www.lucidchart.com/invitations/accept/96bd7abc-54f0-4425-ac9e-17ba82aed587
 
 | Priority | User | Description |\
