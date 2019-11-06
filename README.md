@@ -15,29 +15,29 @@ As developers we want to build this application because we think this will be a 
 
 https://www.lucidchart.com/invitations/accept/96bd7abc-54f0-4425-ac9e-17ba82aed587
 
-| Priority | User | Description |
-| P0 | As a player | I want to be able to create a game with my friends |
-| P1 | As a player (drawing) | I want to be able to see what my word is and draw my picture |
-| P2 | As a player (guessing) | I want to be able to see what has been drawn and submit my guess |
-| P3 | As a player | I want to see my score and the scores of other players in the game |
-| P4 | As a drawer | I want to be able to erase/restart my drawing if I make a mistake |
+| Priority | User | Description |\
+| P0 | As a player | I want to be able to create a game with my friends |\
+| P1 | As a player (drawing) | I want to be able to see what my word is and draw my picture |\
+| P2 | As a player (guessing) | I want to be able to see what has been drawn and submit my guess |\
+| P3 | As a player | I want to see my score and the scores of other players in the game |\
+| P4 | As a drawer | I want to be able to erase/restart my drawing if I make a mistake |\
 | P5 | As a player | I want to be able to see what other players have guessed and if they have guessed the correct answer|
 
 Our minimal viable product would require P0, P1, P2, and P3. 
 
-Technical Implementation: 
-P0: In order to allow players to create a new game, we need to have a home page where one player can specify the lobby name, max amount of players, number of rounds and drawing time limit. 
-This will require a client side page which we will create using HTML, CSS and JavaScript. This will also require a database that stores game information. We will create our database in a Docker container and host it in a droplet on Digital Ocean.
-P1: In order to allow a player to draw, we need to have a drawing board limited to the user drawing. Other users would not be able to draw on the board if they are not the drawer. In addition, the board will be constantly updated so other users can see what is being drawn.
-This will require React in order to create the drawing board and user UI. While drawing the user will constantly be sending PATCH requests to update the board. The drawing will be saved as coordinates in our database.
-P2: In order to allow players to guess what is being drawn, the board must be constantly updated and rendered on the screen. Users who are guessing cannot modify the drawing board. The drawing board should also have little lag between when the user draws and when the board is updated.
-This will require React in order to display the drawing board and UI. Users who are guessing will be sending PATCH requests to add messages to the message board.
-P3: In order to keep score of the users, the users need to be able to see both their own score and other player’s scores. Players should also be able to see the amount of points they would receive if they guess correctly (Scores are based on how soon they get the right answer).
-This information will be stored within our game database which will be created within a Docker container and hosted on Digital Ocean. 
-P4: In order to erase or restart the drawing board, the drawer should have a button to clear all the drawing on the board. Other players should not have access to this button.
-To implement this function we will need to include the necessary client side code for the physical button as well as create a function to clear information from the “drawingBoard” within our struct. 
-P5: In order to implement the message board, players will need to have a chat room so that they guess. Players will be able to view other people’s guesses in the chat room as well. Players should not be able to delete their chat or other people’s chats. Correct guesses should be hidden so that other players can continue to guess.
-To implement this function we would need a message board with constantly updates using GET requests. Players who send messages would use a PATCH request to update the message board.
+**Technical Implementation:**\
+* **P0**: In order to allow players to create a new game, we need to have a home page where one player can specify the lobby name, max amount of players, number of rounds and drawing time limit. 
+   - This will require a client side page which we will create using HTML, CSS and JavaScript. This will also require a database that stores game information. We will create our database in a Docker container and host it in a droplet on Digital Ocean.
+* **P1**: In order to allow a player to draw, we need to have a drawing board limited to the user drawing. Other users would not be able to draw on the board if they are not the drawer. In addition, the board will be constantly updated so other users can see what is being drawn.
+   - This will require React in order to create the drawing board and user UI. While drawing the user will constantly be sending PATCH requests to update the board. The drawing will be saved as coordinates in our database.
+* **P2**: In order to allow players to guess what is being drawn, the board must be constantly updated and rendered on the screen. Users who are guessing cannot modify the drawing board. The drawing board should also have little lag between when the user draws and when the board is updated.
+   - This will require React in order to display the drawing board and UI. Users who are guessing will be sending PATCH requests to add messages to the message board.
+* **P3**: In order to keep score of the users, the users need to be able to see both their own score and other player’s scores. Players should also be able to see the amount of points they would receive if they guess correctly (Scores are based on how soon they get the right answer).
+   - This information will be stored within our game database which will be created within a Docker container and hosted on Digital Ocean.
+* **P4**: In order to erase or restart the drawing board, the drawer should have a button to clear all the drawing on the board. Other players should not have access to this button.
+   - To implement this function we will need to include the necessary client side code for the physical button as well as create a function to clear information from the “drawingBoard” within our struct. 
+* **P5**: In order to implement the message board, players will need to have a chat room so that they guess. Players will be able to view other people’s guesses in the chat room as well. Players should not be able to delete their chat or other people’s chats. Correct guesses should be hidden so that other players can continue to guess.
+   - To implement this function we would need a message board with constantly updates using GET requests. Players who send messages would use a PATCH request to update the message board.
 
 For each of your user story, describe in 2-3 sentences what your technical implementation strategy is. Explicitly note in bold which technology you are using (if applicable):
 
