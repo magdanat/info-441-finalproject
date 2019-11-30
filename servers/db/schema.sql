@@ -13,14 +13,15 @@ CREATE TABLE IF NOT EXISTS Games (
     GameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     CreatedAt DATETIME NOT NULL,
     LobbyName VARCHAR(128) NOT NULL,
-    LobbyDesc VARCHAR(128),    
+    LobbyDesc VARCHAR(128),   
+    MaxPlayers INT DEFAULT 4, 
+    -- Array of Players 
     NumberOfRounds INT DEFAULT 3,
     CurrentRound INT DEFAULT 0,
     Winner  VARCHAR(128)
     BoardID INT NOT NULL,
     FOREIGN KEY (BoardID) references Board(BoardID)  ,
-    WordID INT,
-    FOREIGN KEY (WordID) references Word(WordID),
+    -- Array of Words
     CurrentDrawer INT,
     FOREIGN KEY (CurrentDrawer) references User(UserID),
     DrawingTimer INT NOT NULL,
