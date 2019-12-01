@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS Board (
 );
 
 -- Coordinate Model
+-- Represents all the coordinates in a given board. 
 CREATE TABLE IF NOT EXISTS Coordinates (
     CoordinateID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     BoardID INT NOT NULL,
@@ -58,7 +59,8 @@ CREATE TABLE IF NOT EXISTS Messages (
     MessageBody VARCHAR(128)
 );
 
--- Users_Game represents the users in a game instance
+-- Users_Game represents the users in a game instance. 
+-- Many to many relationship between Users Table and Games Table.
 CREATE TABLE IF NOT EXISTS Users_Game (
     UserGameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     GameID INT NOT NULL,

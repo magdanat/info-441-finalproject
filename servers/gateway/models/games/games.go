@@ -44,9 +44,7 @@ type GamePlayer struct {
 // CreateGame creates an initial game instance.
 func (g *Game) CreateGame() (*Game, error) {
 	game := new(Game)
-
 	game.LobbyName = g.LobbyName
-
 	return game, nil
 }
 
