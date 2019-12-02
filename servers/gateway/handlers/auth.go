@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"assignments-sethanderson8/servers/gateway/models/users"
+	"info-441-finalproject/servers/gateway/models/users"
 	"encoding/json"
 	"info-441-finalproject/servers/gateway/sessions"
 	"net/http"
