@@ -318,9 +318,25 @@ app.patch(":gameID/instance", (req, res, next) => {
 
 // Post 
 // Post request to add coordinates to the drawing board.
+app.post(":gameID/instance/board"), (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // query to insert into Coordinates table 
+    }
+})
 
 // Delete
 // Deletes all coordinate information.
+// I imagine this will be used when the board is reset
+// every turn. 
+app.delete(":gameID/instance/board"), (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // query ty delete coordinates table
+    }
+})
 
 
 ////////////////////
