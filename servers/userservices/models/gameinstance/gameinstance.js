@@ -9,11 +9,11 @@ const mysql = require("mysql");
 const app = express.Router();
 
 // Strings for queries
-const sqlGETGameByID = "SELECT * FROM Games WHERE GameID = ?";
+const sqlGETAllChannels = "SELECT * FROM games";
+const sqlGETGameByID = "SELECT * FROM games WHERE GameID = ?";
 
-
-// Get request to '/v1/game'
-// Gets current game information
+// Get request to '/v1/game/gameID'
+// Gets all current active games
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
@@ -21,7 +21,6 @@ app.get("/", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        // Query to database, left the sql params blank because it is just a select all query
         // !!! UNSURE OF HOW TO GET CURRENT GAME ID vvv !!!!
         connection.query(sqlGETGameByID, [req.params.GameID], (err, result) => {
             if (err) {
@@ -35,7 +34,7 @@ app.get("/", (req, res, next) => {
     }
 });
 
-// Patch request to '/v1/game/instance'
+// Patch request to '/v1/game/'
 // Update current game information including score and messages.
 // 201: application/json. Successfully updates a game
 // 401: player attempts to update game information not relating to them. 
@@ -46,6 +45,7 @@ app.patch("/", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
+
         
 });
 
