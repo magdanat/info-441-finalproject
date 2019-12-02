@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
 -- Drawingboard Models
 CREATE TABLE IF NOT EXISTS Board (
     BoardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -- list of coordinates (Coordiantes table)
 );
 
 -- Coordinate Model

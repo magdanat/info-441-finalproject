@@ -1,4 +1,5 @@
 "use strict";
+const games = require("./models/games/games");
 
 const express = require("express");
 
@@ -9,6 +10,8 @@ const [host, port] = addr.split(":");
 const app = express();
 
 app.use(express.json());
+
+app.use("/v1/games", games);
 
 app.listen(port, () => {
     console.log('Server is running locally at '  + addr);

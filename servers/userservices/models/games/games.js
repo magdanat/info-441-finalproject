@@ -276,6 +276,10 @@ app.delete(":gameID/players", (req, res, next) => {
     }
 })
 
+// Perhaps consider putting all the API requests below this comment
+// in another .js file to separate game lobbies
+// from game instances.
+
 ///////////////////////////////
 // /v1/game/:gameID/instance // <-- should this be :instanceID?
 ///////////////////////////////
@@ -318,6 +322,8 @@ app.patch(":gameID/instance", (req, res, next) => {
 
 // Post 
 // Post request to add coordinates to the drawing board.
+// If the user is not the current drawer, do not allow them
+// to draw on the board or make this request. 
 app.post(":gameID/instance/board"), (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
@@ -329,7 +335,7 @@ app.post(":gameID/instance/board"), (req, res, next) => {
 // Delete
 // Deletes all coordinate information.
 // I imagine this will be used when the board is reset
-// every turn. 
+// every turn or once the current drawer changes. 
 app.delete(":gameID/instance/board"), (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
