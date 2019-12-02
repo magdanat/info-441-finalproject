@@ -12,26 +12,21 @@ const app = express.Router();
 const sqlGETAllChannels = "SELECT * FROM games";
 const sqlGETGameByID = "SELECT * FROM games WHERE GameID = ?";
 
-// Get request to '/v1/game/gameID'
+let connection = mysql.createPool({
+    // We are going to need to set this ENV variable, TODO
+    host: process.env.MYSQL_ADDR,
+    user: 'root',
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DB
+});
+
+// Get request to '/v1/game/:gameID/instance'
 // Gets all current active games
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
 app.get("/", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        // !!! UNSURE OF HOW TO GET CURRENT GAME ID vvv !!!!
-        connection.query(sqlGETGameByID, [req.params.GameID], (err, result) => {
-            if (err) {
-                res.status(500).send("Internal Server Error");
-            } else {
-                res.status(201);
-                res.set("Content-Type", "application/json");
-                res.json(result);
-            }
-        })
-    }
+
 });
 
 // Get request to '/v1/game/gameID'

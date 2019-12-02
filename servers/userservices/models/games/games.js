@@ -23,6 +23,7 @@ const sqlDELETEGameByGameID = "DELETE FROM games WHERE GameID = ?";
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
 const sqlDELETEGamePlayerByID = "DELETE FROM users_game WHERE UserID = ? AND GameID = ?";
 
+// Connection to the mysql database
 let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
     host: process.env.MYSQL_ADDR,
@@ -30,6 +31,27 @@ let connection = mysql.createPool({
     password: process.env.MYSQL_ROOT_PASSWORD,
     database: process.env.MYSQL_DB
 });
+
+const amqp = require('amqplib/callback_api');
+function sendMessageToRabbitMQ(msg) {
+  amqp.connect("amqp://" + process.env.RABBITADDR, (error0, conn) => {
+    if (error0) {
+      throw error0;
+    }
+    conn.createChannel((error1, ch) => {
+      if (error1) {
+        throw error1;
+      }
+      let queueName = process.env.RABBITNAME;
+      ch.assertQueue(queueName, { durable: false });
+      ch.sendToQueue(queueName, Buffer.from(msg));
+    });
+    setTimeout(function () {
+      conn.close();
+      process.exit(0);
+    }, 500);
+  });
+}
 
 //////////////
 // /v1/game //
@@ -59,7 +81,7 @@ app.get("/", (req, res, next) => {
 });
 
 // Post request to '/v1/game'
-// Creates a new game.
+// Creates a new game lobby.
 // 201: Successfully creates a new game
 // 401: Cannot verify players id_value
 // 500: Internal server error
@@ -101,7 +123,7 @@ app.get("/:gameID", (req, res, next) => {
         res.status(401).send("Unauthorized");
     } else {
         // !!! UNSURE OF HOW TO GET CURRENT GAME ID vvv !!!!
-        connection.query(sqlGETGameByID, [req.params.GameID], (err, result) => {
+        connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
             } else {
@@ -218,7 +240,7 @@ app.post(":gameID/players", (req, res, next) => {
                         res.status(201);
                         res.send("User was added as a member of the game instance.");
 
-                        // Possible RabbitMQ 
+                        //RabbitMQ event
                     }
                 })
             }
@@ -246,7 +268,7 @@ app.delete(":gameID/players", (req, res, next) => {
                     } else {
                         res.status(200).send("Delete was successful.");
 
-                        // Possible RabbitMQ
+                        //RabbitMQ event
                     }
                 })
             }
@@ -254,9 +276,52 @@ app.delete(":gameID/players", (req, res, next) => {
     }
 })
 
-////////////////////////////////
-// /v1/game/{gameID}/instance //
-////////////////////////////////
+///////////////////////////////
+// /v1/game/:gameID/instance // <-- should this be :instanceID?
+///////////////////////////////
+
+
+// Refers to information in the current game. 
+// This is information pertains to scores,
+// drawing board information, current words,
+// ect.
+
+// Post request to '/v1/game/:gameID/:instanceID
+// Creates a new game instance. *the actual game*
+// 201: application/json. Sucecessfully creates a game instance.
+// 500: Internal server error.
+app.post(":gameID/instance", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // query to insert into Games_Instance Table
+    }
+})
+
+// Patch request to '/v1/game/:gameID/:instanceID
+// Updates information such as scores, drawing board, current words,
+// ect.
+// Mainly going to be used to update drawing board information.
+// 201: application/json. Successfully makes changes to the game instance.
+// 500: Internal server error.
+app.patch(":gameID/instance", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // query to make changes in Games_Instance Table
+    }
+})
+
+/////////////////////////////////////
+// /v1/game/:gameID/instance/board //
+/////////////////////////////////////
+
+// Post 
+// Post request to add coordinates to the drawing board.
+
+// Delete
+// Deletes all coordinate information.
+
 
 ////////////////////
 // HELPER METHODS //

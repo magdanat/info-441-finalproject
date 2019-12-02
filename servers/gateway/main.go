@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"http"
 
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
@@ -44,4 +45,64 @@ func main() {
 	}
 
 	defer db.Close()
+	
+	context := &handlers.HandlerContext { 
+		SigningKey: sessionKey,
+		SessionStore: newRedisStore,
+		UserStore: userStore,
+		Notifier: handlers.CreateNotifier(),
+	}
+
+	handlers.ConnectToRabbitMQ(context)
+
+	mux := http.NewServerMux()
+
+	// Microservices
+	gamesADDR := os.Getenv("GAMESADDR")
+	mux.Handle("/v1/games", createReverseProxy(gamesADDR, context))
+	mux.Handle("/v1/games/", createReverseProxy(gamesADDR, context))
+
+	// Handlerfunctions
+	mux.HandleFunc("/v1/users", context.UsersHandler)
+	mux.HandleFunc("/v1/users/", context.SpecificUserHandler)
+	mux.HandleFunc("/v1/sessions", context.SessionsHandler)
+	mux.HandleFunc("/v1/sessions/", context.SpecificSessionHandler)
+
+	//Websockets
+	mux.HandleFunc("/v1/ws", context.WebSocketConnectionHandler)
+
+	wrappedMux := handlers.Response(mux)
+
+	log.Printf("listening on %s...\n", addr)
+	log.Fatal(http.ListenAndServeTLS(addr, tlsCertPath, tlsKeyPath, wrappedMux))
+}
+
+func createReverseProxy(addresses string, context *handlers.HandlerContext) *httputil.ReverseProxy {
+	// Spit the addresses
+	splitAddresses := strings.Split(addresses, ",")
+	addrCounter := 0
+	director := func(req *http.Request) {
+		req.URL.Scheme = "http"
+		req.URL.Host = splitAddresses[addrCounter%len(splitAddresses)]
+		addrCounter++
+		// Delete any existing user header
+		req.Header.Del("X-User")
+
+		// Need to check user authentication here
+		// Only add a user header if they are authenticated
+		authorization := req.Header.Get("Authorization")
+		if len(authorization) != 0 {
+			currentState := &handlers.SessionState{}
+			sessionID, err := sessions.GetState(req, context.SigningKey, context.SessionStore, currentState)
+			if sessionID != sessions.InvalidSessionID && err == nil {
+				currentUser := currentState.User
+				jsonUser, _ := json.Marshal(currentUser)
+				req.Header.Set("X-User", string(jsonUser))
+			}
+		}
+
+	}
+
+	proxy := &httputil.ReverseProxy{Director: director}
+	return proxy
 }
