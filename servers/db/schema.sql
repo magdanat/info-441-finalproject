@@ -20,10 +20,12 @@ CREATE TABLE IF NOT EXISTS Games (
     CurrentRound INT DEFAULT 0,
     Winner  VARCHAR(128)
     BoardID INT NOT NULL,
-    FOREIGN KEY (BoardID) references Board(BoardID)  ,
+    FOREIGN KEY (BoardID) references Board(BoardID),
     -- Array of Words
+    GameCreator INT
+    FOREIGN KEY (GameCreator) references Users(UserID)
     CurrentDrawer INT,
-    FOREIGN KEY (CurrentDrawer) references User(UserID),
+    FOREIGN KEY (CurrentDrawer) references Users(UserID),
     DrawingTimer INT NOT NULL,
     TimeElapsed INT
 );

@@ -34,6 +34,28 @@ app.get("/", (req, res, next) => {
     }
 });
 
+// Get request to '/v1/game/gameID'
+// Gets all current active games
+// 200: Successfully retrieves current game information
+// 401: Attempts to access game which player is not part of
+// 500: Internal server error
+app.get("/", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // !!! UNSURE OF HOW TO GET CURRENT GAME ID vvv !!!!
+        connection.query(sqlGETGameByID, [req.params.GameID], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                res.status(201);
+                res.set("Content-Type", "application/json");
+                res.json(result);
+            }
+        })
+    }
+});
+
 // Patch request to '/v1/game/'
 // Update current game information including score and messages.
 // 201: application/json. Successfully updates a game

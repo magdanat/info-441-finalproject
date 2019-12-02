@@ -8,9 +8,14 @@ const mysql = require("mysql");
 // Create a new express application
 const app = express.Router();
 
-// SQL Queries
+// SQL Queries /v1/game
 const sqlGETAllGames = "SELECT * FROM games";
-const sqlGETGameByID = "SELECT * FROM Games WHERE GameID = ?";
+const sqlGETGameByID = "SELECT * FROM games WHERE GameID = ?";
+const sqlPOSTGame = "INSERT INTO games (LobbyName, LobbyDesc, GameCreator) VALUES(?, ?, ?)"
+
+// SQL Queries /v/game/:gameID
+const sqlPATCHGameByID = "UPDATE games SET LobbyName = ?,  LobbyDesc = ? WHERE GameID = ?";
+
 
 
 let connection = mysql.createPool({
@@ -28,7 +33,7 @@ let connection = mysql.createPool({
 // Refers to all current games.
 
 // Get request to '/v1/game'
-// Gets all current active game information
+// Gets all current active games.
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
@@ -61,6 +66,17 @@ app.post("/", (req, res, next) => {
         let name = user.userName + "'s Lobby";
         let description = req.body.description ? req.body.description : "";
         // sql request to insert 
+        // not sure if correctly grabbing userID here
+        connection.query(sqlPOSTGame, [name, description, user.id], (err, result) => {
+            if (err) {
+                res/status(500).send("Internal Server Error");
+            } else {
+                res.status(201);
+                res.set("Content-Type", "application/json");
+                res.json(result);
+            }
+            // Need to send event to RabbitMQ Server
+        })
     }
 });
 
@@ -70,13 +86,12 @@ app.post("/", (req, res, next) => {
 
 // Refers to a specific game identified by {gameID}.
 
-
 // Get request to '/v1/game/:gameID'
 // Gets current game information.
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
-app.get("/", (req, res, next) => {
+app.get("/:gameID", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
@@ -101,12 +116,17 @@ app.get("/", (req, res, next) => {
 // 401: player attempts to update game information not relating to them. 
 //      Such as drawer, drawing_board, messages, or other people’s game_player
 // 500: Internal server error
-app.patch("/", (req, res, next) => {
+app.patch("/:gameID", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        let user = JSON.parse(req.get('X-User'));
-
+        // let user = JSON.parse(req.get('X-User'));
+        if (checkIfCreator(req, result)) {
+            let lobbyDesc = req.body.description ? req.body.description : "";
+            let lobbyName = req.body.lobbyName ? req.body.lobbyName : "";
+            // Patch the game
+            connection.query(sqlPATCHGameByID)
+        }
     }
 });
 
@@ -116,7 +136,7 @@ app.patch("/", (req, res, next) => {
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
-app.delete("/", (req, res, next) => {
+app.delete("/:gameID", (req, res, next) => {
     if (!checkXUserHeader(req)) {
             res.status(401).send("Unauthorized");
     } else {
@@ -124,7 +144,29 @@ app.delete("/", (req, res, next) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
             } else {
+                // need to check if there are no members in the channel still
+                if (checkIfCreator(req, result)) {
+                    // Delete from users_games
+                    connection.query(sqlDELETEGameFROMUsersGames, [req.params.gameID], (err, result) => {
+                        if (err) {
+                            res.status(500).send("Internal Server Error.");
+                        } else {
+                            // Delete from messages table
+                                // Delete game from games table
+                                // May still need to delete from message table and corresponding
+                                // many-to-many table.
+                                connection.query(sqlDELETEGameByGameID, [req.params.gameID], (err, result) => {
+                                    if (err) {
+                                        res.status(500).send("Internal Server Error");
+                                    } else {
+                                        res.status(200).send("Delete was successful.")
 
+                                        // Send event to RabbitMQ Server
+                                    }
+                                })
+                        }
+                    })
+                }
             }
         })
     } 
