@@ -15,18 +15,37 @@ CREATE TABLE IF NOT EXISTS Games (
     LobbyName VARCHAR(128) NOT NULL,
     LobbyDesc VARCHAR(128),   
     MaxPlayers INT DEFAULT 4, 
-    -- Array of Players 
+    -- Array of Players (Users_Games Table)
     NumberOfRounds INT DEFAULT 3,
-    CurrentRound INT DEFAULT 0,
-    Winner  VARCHAR(128)
-    BoardID INT NOT NULL,
-    FOREIGN KEY (BoardID) references Board(BoardID),
+    -- CurrentRound INT DEFAULT 0,
+    -- Winner  VARCHAR(128)
+    -- BoardID INT,
+    -- FOREIGN KEY (BoardID) references Board(BoardID),
     -- Array of Words
     GameCreator INT
     FOREIGN KEY (GameCreator) references Users(UserID)
+    -- CurrentDrawer INT,
+    -- FOREIGN KEY (CurrentDrawer) references Users(UserID),
+    DrawingTimer INT NOT NULL
+    -- TimeElapsed INT
+);
+
+-- Game Instance Model
+-- Not too sure if this is necessary but creating it 
+-- just in case.
+-- How to reference an attribute from another table?
+CREATE TABLE IF NOT EXISTS Games_Instance (
+    GameInstanceID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    GameID INT,
+    FOREIGN KEY (GameID) references Games(GameID),
+    NumberOfRounds INT,
+    FOREIGN KEY (NumberOfRounds) references Games(NumberOfRounds) on Games(GameID),
+    BoardID INT,
+    FOREIGN KEY (BoardID) references Board(BoardID),
     CurrentDrawer INT,
     FOREIGN KEY (CurrentDrawer) references Users(UserID),
-    DrawingTimer INT NOT NULL,
+    CurrentRound INT DEFAULT 0,
+    Winner VARCHAR(128), 
     TimeElapsed INT
 );
 

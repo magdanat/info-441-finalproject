@@ -121,6 +121,7 @@ app.get("/:gameID", (req, res, next) => {
 // 401: player attempts to update game information not relating to them. 
 //      Such as drawer, drawing_board, messages, or other people’s game_player
 // 500: Internal server error
+// Might need to add a condition where once a game is started, the game is closed and no one can
 app.patch("/:gameID", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
@@ -252,6 +253,10 @@ app.delete(":gameID/players", (req, res, next) => {
         })
     }
 })
+
+////////////////////////////////
+// /v1/game/{gameID}/instance //
+////////////////////////////////
 
 ////////////////////
 // HELPER METHODS //
