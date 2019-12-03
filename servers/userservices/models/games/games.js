@@ -28,6 +28,8 @@ const sqlPOSTGameInstance = "INSERT INTO Games_Instance (GameID, NumberOfRounds,
 const sqlPATCHGameInstance = "UPDATE Games_Instance SET CurrentDrawer = ?, CurrentRound = ?, CurrentWord = ?, Winner = ?, Score = ?, WHERE GameInstancID = ?";
 const sqlPOSTBoard = "INSERT INTO Board (Drawing) VALUES(?)"
 const sqlPATCHBoardByID = "UPDATE Board SET Drawing = ?, WHERE BoardID = ?";
+const sqlPOSTMessage = "INSERT INTO Messages (UserID, GameID, MessageBody) VALUES(?, ?, ?)"
+const sqlPATCHMessage = "UPDATE Messages SET MessageBody = ?, WHERE MessageID = ?";
 
 // SQL Queries /v1/game/:gameID/instance 
 const sqlPOSTInstance = "INSERT INTO games_instance(GameID) VALUES(?)"
@@ -402,11 +404,48 @@ app.patch(":gameID/instance/board", (req, res, next) => {
 ///////////////////////
 
 // Post
-// 
+
+// Post request to '/v1/game/:gameID/:instanceID/message
+// Create new message (answer)
+// 201: application/json. Sucecessfully create message
+// 500: Internal server error.
+app.post(":gameID/:instanceID/message", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        // get userID, get gameID
+
+
+        connection.query(sqlPOSTMessage, [userID, req.params.gameID, req.body.messageBody], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                res.status(201);
+                res.set("Content-Type", "application/json");
+                res.json(result);
+            }
+        })
+    }
+})
 
 
 // Patch 
 // 
+app.patch(":gameID/:instanceID/message", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        connection.query(sqlPATCHMessage, [req.body.messageBody, req.params.messageID], (err, result) => {
+            if(err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                res.status(200);
+                res.set("Content-Type", "application/json");
+                res.json(result.messageBody);
+            }
+        }
+    }
+})
 
 
 
