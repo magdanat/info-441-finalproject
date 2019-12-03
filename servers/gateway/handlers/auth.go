@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"info-441-finalproject/servers/gateway/models/users"
 	"encoding/json"
+	"info-441-finalproject/servers/gateway/models/users"
 	"info-441-finalproject/servers/gateway/sessions"
 	"net/http"
 	"path"
@@ -17,29 +17,29 @@ func (ctx) UsersHandler(w http.ResponseWriter, r *http.Request) {
 		contentType := r.Header.Get("Content-Type")
 		if strings.HasPrefix(contentType, "application/json") {
 
-			newUser := &users.NewUser{}
+			newUser := &users.User{}
 
 			// Decode newUser
 			json.NewDecoder(r.Body).Decode(newUser)
 
-			// Ensure the data is valid and create a new user account in the database.
-			err := newUser.Validate()
-			if err != nil {
-				http.Error(w, "Invalid new user", http.StatusBadRequest)
-				return
-			}
+			// // Ensure the data is valid and create a new user account in the database.
+			// err := newUser.Validate()
+			// if err != nil {
+			// 	http.Error(w, "Invalid new user", http.StatusBadRequest)
+			// 	return
+			// }
 
 			// Adding new user to database
-			user, _ := newUser.ToUser()
+			// user, _ := newUser.ToUser()
 
-			// New session for the user
-			currentSession := &SessionState{
-				TimeBegan: time.Now(),
-				User:      user,
-			}
+			// // New session for the user
+			// currentSession := &SessionState{
+			// 	TimeBegan: time.Now(),
+			// 	User:      user,
+			// }
 
-			// Begin a new session for the new user.
-			sessions.BeginSession(ctx.SigningKey, ctx.SessionStore, currentSession, w)
+			// // Begin a new session for the new user.
+			// sessions.BeginSession(ctx.SigningKey, ctx.SessionStore, currentSession, w)
 
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Set("Content-Type", "application/json")
