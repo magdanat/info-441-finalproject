@@ -14,8 +14,8 @@ import (
 
 //HandlerContext gives handler functions access to gloabls
 type HandlerContext struct {
-	SigningKey   string               `json:"signingKey,omitempty"`
-	SessionStore *sessions.RedisStore `json:"sessionStore,omitempty"`
+	// SigningKey   string               `json:"signingKey,omitempty"`
+	// SessionStore *sessions.RedisStore `json:"sessionStore,omitempty"`
 	UserStore    *users.MySQLStore    `json:"userStore,omitempty"`
 	Notifier     *Notifier
 }
