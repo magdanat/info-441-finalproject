@@ -60,10 +60,12 @@ func main() {
 	mux.Handle("/v1/games", createReverseProxy(gamesADDR, context))
 	// Specific handler functions for games
 	mux.Handle("/v1/games/", createReverseProxy(gamesADDR, context))
+	mux.Handle("/v1/users", createReverseProxy(usersADDR, context))
+	mux.Handle("/v1/users/", createReverseProxy(usersADDR, context))
 
 	// Handlerfunctions
-	mux.HandleFunc("/v1/users", context.UsersHandler)
-	mux.HandleFunc("/v1/users/", context.SpecificUserHandler)
+	// mux.HandleFunc("/v1/users", context.UsersHandler)
+	// mux.HandleFunc("/v1/users/", context.SpecificUserHandler)
 	// mux.HandleFunc("/v1/sessions", context.SessionsHandler)
 	// mux.HandleFunc("/v1/sessions/", context.SpecificSessionHandler)
 
