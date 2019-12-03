@@ -68,6 +68,8 @@ app.post("/", (req, res, next) => {
   }
 });
 
+// Get Request to '/v1/users'
+
 // Probably need to delete users from the other tables where userID is located 
 // but worry about this later. 
 // Delete request to '/v1/users'
