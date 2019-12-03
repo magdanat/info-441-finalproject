@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Games (
     LobbyName VARCHAR(128) NOT NULL,
     LobbyDesc VARCHAR(128),   
     MaxPlayers INT DEFAULT 4, 
-    -- Array of Players (Users_Games Table)
+    -- Array of Players (Users_Games Table) Represents users currently in the game lobby. 
     NumberOfRounds INT DEFAULT 3,
     -- Array of Words
     GameCreator INT
@@ -49,10 +49,12 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
 );
 
 -- Drawingboard Models
+-- Contains drawings made by users.
 CREATE TABLE IF NOT EXISTS Board (
     BoardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    -- list of coordinates (Coordiantes table)
-    Drawing VARCHAR(65535)
+    -- list of coordinates (Coordiantes table) may no longer be necessary
+    -- if we are storing drawings as strings.
+    Drawing VARCHAR(65535) -- Stores drawings as strings
 );
 
 -- -- Coordinate Model
@@ -66,12 +68,16 @@ CREATE TABLE IF NOT EXISTS Board (
 -- )
 
 -- Words Model
+-- Represents all the words that can be chosen 
+-- Might not need if we are grabbing information off of a .csv file.
+-- Can just compare the message on the frontEnd of things. 
 CREATE TABLE IF NOT EXISTS Words (
     WordID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Word VARCHAR(128) NOT NULL
 );
 
 -- Messages model
+-- Compare "message" that user sends to the currentword of the game instance.
 CREATE TABLE IF NOT EXISTS Messages (
     MessageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     UserID INT,
@@ -83,6 +89,10 @@ CREATE TABLE IF NOT EXISTS Messages (
 
 -- Users_Game represents the users in a game instance. 
 -- Many to many relationship between Users Table and Games Table.
+-- Any time a user is added into a lobby, add them into this table.
+-- Can use this table to also find out who is in a game instance
+-- by selecting all the users who have the same GameID that
+-- the game instance contains. 
 CREATE TABLE IF NOT EXISTS Users_Game (
     UserGameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     GameID INT NOT NULL,

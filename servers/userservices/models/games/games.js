@@ -29,6 +29,8 @@ const sqlPATCHGameInstance = "UPDATE Games_Instance SET CurrentDrawer = ?, Curre
 const sqlPOSTBoard = "INSERT INTO Board (Drawing) VALUES(?)"
 const sqlPATCHBoardByID = "UPDATE Board SET Drawing = ?, WHERE BoardID = ?";
 
+// SQL Queries /v1/game/:gameID/instance 
+const sqlPOSTInstance = "INSERT INTO games_instance(GameID) VALUES(?)"
 
 // Connection to the mysql database
 let connection = mysql.createPool({
@@ -175,7 +177,7 @@ app.patch("/:gameID", (req, res, next) => {
 
 // Delete request to '/v1/game/gameID'
 // Removes a game instance.
-// Conditions: Either all players leave the channel or the creator deletes the channel.
+// Conditions: Either all players leave the channel or the creator deletes the channel or the game is finished.
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
