@@ -178,8 +178,8 @@ app.patch("/:gameID", (req, res, next) => {
 });
 
 // Delete request to '/v1/game/gameID'
-// Removes a game instance.
-// Conditions: Either all players leave the channel or the creator deletes the channel or the game is finished.
+// Removes a game lobby.
+// Conditions: Either all players leave the lobby or the creator deletes the lobby or the game is finished.
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
