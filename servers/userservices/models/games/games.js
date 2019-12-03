@@ -96,7 +96,7 @@ app.post("/", (req, res, next) => {
         // not sure if correctly grabbing userID here
         connection.query(sqlPOSTGame, [name, description, user.id], (err, result) => {
             if (err) {
-                res/status(500).send("Internal Server Error");
+                res.status(500).send("Internal Server Error");
             } else {
                 res.status(201);
                 res.set("Content-Type", "application/json");

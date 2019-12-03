@@ -1,11 +1,7 @@
 -- Player Models
 CREATE TABLE IF NOT EXISTS Users (
     UserID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Email VARCHAR(128) NOT NULL UNIQUE,
-    PassHash BINARY(32) NOT NULL,
-    UserName VARCHAR(255) UNIQUE,
-    FirstName VARCHAR(128) NOT NULL,
-    LastName VARCHAR (128) NOT NULL
+    UserName VARCHAR(255)
 );
 
 -- Game Models
@@ -17,17 +13,19 @@ CREATE TABLE IF NOT EXISTS Games (
     MaxPlayers INT DEFAULT 4, 
     -- Array of Players (Users_Games Table)
     NumberOfRounds INT DEFAULT 3,
+    -- Array of Words
+    GameCreator INT
+    FOREIGN KEY (GameCreator) references Users(UserID),
+    DrawingTimer INT NOT NULL
+
+    
+    -- TimeElapsed INT
+    -- CurrentDrawer INT,
+    -- FOREIGN KEY (CurrentDrawer) references Users(UserID),
     -- CurrentRound INT DEFAULT 0,
     -- Winner  VARCHAR(128)
     -- BoardID INT,
     -- FOREIGN KEY (BoardID) references Board(BoardID),
-    -- Array of Words
-    GameCreator INT
-    FOREIGN KEY (GameCreator) references Users(UserID)
-    -- CurrentDrawer INT,
-    -- FOREIGN KEY (CurrentDrawer) references Users(UserID),
-    DrawingTimer INT NOT NULL
-    -- TimeElapsed INT
 );
 
 -- Game Instance Model
@@ -38,32 +36,34 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
     GameInstanceID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     GameID INT,
     FOREIGN KEY (GameID) references Games(GameID),
-    NumberOfRounds INT,
+    NumberOfRounds INT DEFAULT 3,
     FOREIGN KEY (NumberOfRounds) references Games(NumberOfRounds) on Games(GameID),
     BoardID INT,
     FOREIGN KEY (BoardID) references Board(BoardID),
     CurrentDrawer INT,
     FOREIGN KEY (CurrentDrawer) references Users(UserID),
     CurrentRound INT DEFAULT 0,
+    CurrentWord VARCHAR(128), 
     Winner VARCHAR(128), 
-    TimeElapsed INT
+    Score INT DEFAULT 500
 );
 
 -- Drawingboard Models
 CREATE TABLE IF NOT EXISTS Board (
     BoardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     -- list of coordinates (Coordiantes table)
+    Drawing VARCHAR(65535)
 );
 
--- Coordinate Model
--- Represents all the coordinates in a given board. 
-CREATE TABLE IF NOT EXISTS Coordinates (
-    CoordinateID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    BoardID INT NOT NULL,
-    FOREIGN KEY (BoardID) references Board(BoardID),
-    XCoord  INT NOT NULL,
-    YCoord INT NOT NULL,
-)
+-- -- Coordinate Model
+-- -- Represents all the coordinates in a given board. 
+-- CREATE TABLE IF NOT EXISTS Coordinates (
+--     CoordinateID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+--     BoardID INT NOT NULL,
+--     FOREIGN KEY (BoardID) references Board(BoardID),
+--     XCoord  INT NOT NULL,
+--     YCoord INT NOT NULL,
+-- )
 
 -- Words Model
 CREATE TABLE IF NOT EXISTS Words (
@@ -88,5 +88,6 @@ CREATE TABLE IF NOT EXISTS Users_Game (
     GameID INT NOT NULL,
     FOREIGN KEY (GameID) references Games(GameID),
     UserID INT NOT NULL,
-    FOREIGN KEY (UserID) references Users(UserID)
+    FOREIGN KEY (UserID) references Users(UserID),
+    SCORE INT DEFAULT 0
 );
