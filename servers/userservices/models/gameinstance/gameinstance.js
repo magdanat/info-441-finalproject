@@ -14,10 +14,10 @@ const sqlGETGameByID = "SELECT * FROM games WHERE GameID = ?";
 
 let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
-    host: process.env.MYSQL_ADDR,
+    host: '127.0.0.1',
     user: 'root',
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DB
+    password: 'password',
+    database: 'scribble'
 });
 
 // Get request to '/v1/game/:gameID/instance'
@@ -63,7 +63,7 @@ app.patch("/", (req, res, next) => {
         res.status(401).send("Unauthorized");
     } else {
 
-        
+    }
 });
 
 // Delete request to '/v1/game/instance'

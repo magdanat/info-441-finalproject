@@ -1,6 +1,6 @@
 "use strict";
 const games = require("./models/games/games");
-const games = require("./models/users/users");
+const users = require("./models/users/users");
 
 const express = require("express");
 
