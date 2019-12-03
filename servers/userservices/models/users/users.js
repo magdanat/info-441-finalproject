@@ -9,6 +9,9 @@ const mysql = require("mysql");
 const app = express.Router();
 
 // SQL Queries to '/v1/users'
+const sqlPOSTUsers = "INSERT INTO users (UserName) VALUES(?)";
+const sqlDELETEUsersByID = "DELETE FROM users WHERE UserID = ?";
+
 
 // Connection to the mysql database
 let connection = mysql.createPool({
@@ -49,20 +52,40 @@ function sendMessageToRabbitMQ(msg) {
 // 201: Successfully creates a new user and inserts it into the database.
 // 500: Internal server error
 app.post("/", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        let username = req.body.username  
-        connection.query(sqlPOSTUsers, [username], (err, result) => {
-            if (err) {
-                res.status(500).send("Internal Server Error.");
-            } else {
-                res.status(201);
-                res.set("Content-Type", "application/json");
-                res.json(result);
-            }
-        })
-    }
+  if (!checkXUserHeader(req)) {
+      res.status(401).send("Unauthorized");
+  } else {
+      let username = req.body.username  
+      connection.query(sqlPOSTUsers, [username], (err, result) => {
+          if (err) {
+              res.status(500).send("Internal Server Error.");
+          } else {
+              res.status(201);
+              res.set("Content-Type", "application/json");
+              res.json(result);
+          }
+      })
+  }
+});
+
+// Probably need to delete users from the other tables where userID is located 
+// but worry about this later. 
+// Delete request to '/v1/users'
+// Deletes userID
+// 201: Succesffully deletes a user from the database.
+// 500: Internal Server error.
+app.delete("/", (req, res, next) => {
+  if (!checkXUserHeader(req)) {
+  } else {
+      connection.query(sqlDELETEUsersByID, [req.body.userid], (err, result) => {
+        if (err) {
+          res.status(500).send("Internal Server Error.");
+        } else {
+          res.status(200).send("Delete was successful");
+          //Rabbit mq.
+        }
+      }) 
+  }
 });
 
 ////////////////////

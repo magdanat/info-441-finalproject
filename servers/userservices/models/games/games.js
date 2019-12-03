@@ -23,6 +23,17 @@ const sqlDELETEGameByGameID = "DELETE FROM games WHERE GameID = ?";
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
 const sqlDELETEGamePlayerByID = "DELETE FROM users_game WHERE UserID = ? AND GameID = ?";
 
+const sqlGETGameInstanceByID = "SELECT * FROM Games_Instance WHERE GameInstanceID = ?";
+const sqlPOSTGameInstance = "INSERT INTO Games_Instance (GameID, NumberOfRounds, BoardID) VALUES(?, ?, ?)"
+const sqlPATCHGameInstance = "UPDATE Games_Instance SET CurrentDrawer = ?, CurrentRound = ?, CurrentWord = ?, Winner = ?, Score = ?, WHERE GameInstancID = ?";
+const sqlPOSTBoard = "INSERT INTO Board (Drawing) VALUES(?)"
+const sqlPATCHBoardByID = "UPDATE Board SET Drawing = ?, WHERE BoardID = ?";
+const sqlPOSTMessage = "INSERT INTO Messages (UserID, GameID, MessageBody) VALUES(?, ?, ?)"
+const sqlPATCHMessage = "UPDATE Messages SET MessageBody = ?, WHERE MessageID = ?";
+
+// SQL Queries /v1/game/:gameID/instance 
+const sqlPOSTInstance = "INSERT INTO games_instance(GameID) VALUES(?)"
+
 // Connection to the mysql database
 let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
@@ -167,8 +178,8 @@ app.patch("/:gameID", (req, res, next) => {
 });
 
 // Delete request to '/v1/game/gameID'
-// Removes a game instance.
-// Conditions: Either all players leave the channel or the creator deletes the channel.
+// Removes a game lobby.
+// Conditions: Either all players leave the lobby or the creator deletes the lobby or the game is finished.
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
@@ -298,7 +309,22 @@ app.post(":gameID/instance", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        // query to insert into Games_Instance Table
+        // create a board, get the board ID in return
+        let newBoard = ""; // empty string = blank board
+        connection.query(sqlPOSTBoard, [newBoard], (err, result) => {
+            let boardID = result.boardID;
+            // query to insert into Games_Instance Table
+            connection.query(sqlPOSTGameInstance, [req.params.gameID, req.body.numRounds, boardID], (err, result) => {
+                if (err) {
+                    res.status(500).send("Internal Server Error");
+                } else {
+                    res.status(201);
+                    res.set("Content-Type", "application/json");
+                    res.json(result);
+                }
+            })
+
+        })
     }
 })
 
@@ -308,11 +334,34 @@ app.post(":gameID/instance", (req, res, next) => {
 // Mainly going to be used to update drawing board information.
 // 201: application/json. Successfully makes changes to the game instance.
 // 500: Internal server error.
-app.patch(":gameID/instance", (req, res, next) => {
+app.patch(":gameID/instanceID", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        // query to make changes in Games_Instance Table
+        // query current game instance and get all data
+        connection.query(sqlGETGameInstanceBYID, [req.params.instanceID], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                // check each variable, if missing insert current data
+                let currDrawer = req.body.currentDrawer ? req.body.currentDrawer : result.currentDrawer;
+                let currRound = req.body.currentRound ? req.body.currentRound : result.currentRound;
+                let currWord = req.body.currentWord ? req.body.currentWord : result.currentWord;
+                let winner = req.body.winner? req.body.winner : result.winner;
+                let score = req.body.score ? req.body.score : result.score;
+
+                // query to make changes in Games_Instance Table
+                connection.query(sqlPATCHGameInstance, [currDrawer, currRound, currWord, winner, score, req.params.instanceID], (err, result) => {
+                    if (err) {
+                        res.status(500).send("Internal Server Error");
+                    } else {
+                        res.status(201);
+                        res.set("Content-Type", "application/json");
+                        res.json(result);
+                    }
+                })
+            }
+        })
     }
 })
 
@@ -320,29 +369,85 @@ app.patch(":gameID/instance", (req, res, next) => {
 // /v1/game/:gameID/instance/board //
 /////////////////////////////////////
 
-// Post 
-// Post request to add coordinates to the drawing board.
-// If the user is not the current drawer, do not allow them
-// to draw on the board or make this request. 
-app.post(":gameID/instance/board"), (req, res, next) => {
+// PATCH
+// Updates Board, can update with empty string (blank board) to drawer changes
+// I imagine this will be used when the board is reset
+// every turn or once the current drawer changes. 
+app.patch(":gameID/instance/board", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        // query to insert into Coordinates table 
+        // 
+        connection.query(sqlGETGameInstanceByID, [req.params.instanceID], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                let boardID = result.boardID;
+                connection.query(sqlPATCHBoardByID, [req.drawing, boardID], (err, result) => {
+                    if (err) {
+                        res.status(500).send("Internal Server Error");
+                    } else {
+                        res.status(201);
+                        res.set("Content-Type", "application/json");
+                        res.json(result);
+                    }
+                })
+            }
+        })
+
     }
 })
 
-// Delete
-// Deletes all coordinate information.
-// I imagine this will be used when the board is reset
-// every turn or once the current drawer changes. 
-app.delete(":gameID/instance/board"), (req, res, next) => {
+
+///////////////////////
+// Messages (Answer) //
+///////////////////////
+
+// Post
+
+// Post request to '/v1/game/:gameID/:instanceID/message
+// Create new message (answer)
+// 201: application/json. Sucecessfully create message
+// 500: Internal server error.
+app.post(":gameID/:instanceID/message", (req, res, next) => {
     if (!checkXUserHeader(req)) {
         res.status(401).send("Unauthorized");
     } else {
-        // query ty delete coordinates table
+        // get userID, get gameID
+
+
+        connection.query(sqlPOSTMessage, [userID, req.params.gameID, req.body.messageBody], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                res.status(201);
+                res.set("Content-Type", "application/json");
+                res.json(result);
+            }
+        })
     }
 })
+
+
+// Patch 
+// 
+app.patch(":gameID/:instanceID/message", (req, res, next) => {
+    if (!checkXUserHeader(req)) {
+        res.status(401).send("Unauthorized");
+    } else {
+        connection.query(sqlPATCHMessage, [req.body.messageBody, req.params.messageID], (err, result) => {
+            if(err) {
+                res.status(500).send("Internal Server Error");
+            } else {
+                res.status(200);
+                res.set("Content-Type", "application/json");
+                res.json(result.messageBody);
+            }
+        }
+    }
+})
+
+
 
 
 ////////////////////
@@ -373,3 +478,5 @@ function checkIfCreator(req, result) {
   
   // Need to export the router
   module.exports = app;
+
+// patch request to game instance, get new word
