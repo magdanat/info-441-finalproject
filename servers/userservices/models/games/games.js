@@ -23,6 +23,9 @@ const sqlDELETEGameByGameID = "DELETE FROM games WHERE GameID = ?";
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
 const sqlDELETEGamePlayerByID = "DELETE FROM users_game WHERE UserID = ? AND GameID = ?";
 
+// SQL Queries /v1/game/:gameID/instance 
+const sqlPOSTInstance = "INSERT INTO games_instance(GameID) VALUES(?)"
+
 // Connection to the mysql database
 let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
@@ -168,7 +171,7 @@ app.patch("/:gameID", (req, res, next) => {
 
 // Delete request to '/v1/game/gameID'
 // Removes a game instance.
-// Conditions: Either all players leave the channel or the creator deletes the channel.
+// Conditions: Either all players leave the channel or the creator deletes the channel or the game is finished.
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
@@ -299,6 +302,12 @@ app.post(":gameID/instance", (req, res, next) => {
         res.status(401).send("Unauthorized");
     } else {
         // query to insert into Games_Instance Table
+        connection.query(sqlPOSTInstance, [req.body.gameID], (err, result) => {
+            if (err) {
+                res.status(500).send("Internal Server Error.");
+            } else {
+            }
+        })
     }
 })
 
