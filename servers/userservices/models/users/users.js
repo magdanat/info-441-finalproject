@@ -16,10 +16,10 @@ const sqlDELETEUsersByID = "DELETE FROM users WHERE UserID = ?";
 // Connection to the mysql database
 let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
-    host: process.env.MYSQL_ADDR,
+    host: '127.0.0.1',
     user: 'root',
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DB
+    password: 'password',
+    database: 'scribble'
 });
 
 const amqp = require('amqplib/callback_api');

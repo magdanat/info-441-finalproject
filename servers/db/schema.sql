@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS Games (
     -- Array of Players (Users_Games Table) Represents users currently in the game lobby. 
     NumberOfRounds INT DEFAULT 3,
     -- Array of Words
-    GameCreator INT
+    GameCreator INT,
     FOREIGN KEY (GameCreator) references Users(UserID),
     DrawingTimer INT NOT NULL
 
@@ -28,6 +28,15 @@ CREATE TABLE IF NOT EXISTS Games (
     -- FOREIGN KEY (BoardID) references Board(BoardID),
 );
 
+-- Drawingboard Models
+-- Contains drawings made by users.
+CREATE TABLE IF NOT EXISTS Board (
+    BoardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    -- list of coordinates (Coordiantes table) may no longer be necessary
+    -- if we are storing drawings as strings.
+    Drawing TEXT -- Stores drawings as strings
+);
+
 -- Game Instance Model
 -- Not too sure if this is necessary but creating it 
 -- just in case.
@@ -37,7 +46,6 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
     GameID INT,
     FOREIGN KEY (GameID) references Games(GameID),
     NumberOfRounds INT DEFAULT 3,
-    FOREIGN KEY (NumberOfRounds) references Games(NumberOfRounds) on Games(GameID),
     BoardID INT,
     FOREIGN KEY (BoardID) references Board(BoardID),
     CurrentDrawer INT,
@@ -48,14 +56,6 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
     Score INT DEFAULT 500
 );
 
--- Drawingboard Models
--- Contains drawings made by users.
-CREATE TABLE IF NOT EXISTS Board (
-    BoardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    -- list of coordinates (Coordiantes table) may no longer be necessary
-    -- if we are storing drawings as strings.
-    Drawing VARCHAR(65535) -- Stores drawings as strings
-);
 
 -- -- Coordinate Model
 -- -- Represents all the coordinates in a given board. 
@@ -81,9 +81,9 @@ CREATE TABLE IF NOT EXISTS Words (
 CREATE TABLE IF NOT EXISTS Messages (
     MessageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     UserID INT,
-    FOREIGN KEY (UserID) references User(UserID),
+    FOREIGN KEY (UserID) references Users(UserID),
     GameID INT,
-    FOREIGN KEY (GameID) references Games(GameID)
+    FOREIGN KEY (GameID) references Games(GameID),
     MessageBody VARCHAR(128)
 );
 
