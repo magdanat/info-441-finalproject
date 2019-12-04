@@ -5,7 +5,7 @@ var cors = require('cors')
 
 const express = require("express");
 
-const addr = process.env.ADDR || ":80";
+const addr = process.env.ADDR || ":3000";
 
 const [host, port] = addr.split(":");
 
