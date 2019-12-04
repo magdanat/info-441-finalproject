@@ -1,0 +1,55 @@
+import React from 'react';
+import './styles/Home.css';
+import Header from './components/Header';
+import { Button, Form} from "react-bootstrap";
+import {Link} from 'react-router-dom';
+
+export default class Home extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: ""
+    }
+  }
+
+  handleUserNameChange(curVal) {
+    this.setState({
+      username: curVal
+    })
+  }
+
+  render() {
+    return (
+      <div id="Page">
+        <Header />
+        <body id="Content">
+          <div id="SignUpContainer">
+            <h2>Welcome to UW Scribble!</h2>
+            <p>
+              UW scribble is a simple drawing game like pictionary. To play, simply enter your username for this session and hit the play button.
+            </p>
+            <form onSubmit={this.onClickPlay}>
+              <Form.Group controlId="email" bsSize="large">
+                <Form.Label>Username:</Form.Label>
+                <Form.Control
+                  autoFocus
+                  type="email"
+
+                  onChange={e => this.handleUserNameChange(e.target.value)}
+                />
+              </Form.Group>
+              <Link to={{pathname: "gamelist",
+                state:{createNewUser: this.state.username}
+              }}
+              >
+                <Button block bsSize="large" type="submit">
+                  Play!
+                </Button>
+              </Link>
+            </form>
+          </div>
+        </body>
+      </div>
+    )
+  }
+}
