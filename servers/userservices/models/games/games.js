@@ -18,6 +18,7 @@ const sqlPATCHGameByID = "UPDATE games SET LobbyName = ?, LobbyDesc = ? WHERE Ga
 const sqlDELETEGameFROMUsersGames = "DELETE FROM users_game WHERE GameID = ?";
 const sqlDELETEMessagesByGameID = "DELETE FROM messages WHERE GameID = ?";
 const sqlDELETEGameByGameID = "DELETE FROM games WHERE GameID = ?";
+const sqlDELETEGameInstanceByID = "DELETE FROM games_instance WHERE GameID = ?";
 
 // SQL Queries /v1/game/:gameID/players
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
@@ -190,6 +191,8 @@ app.get("/:gameID", (req, res, next) => {
 //     // }
 // });
 
+// WORKS IN POSTMAN
+// Could use more testing. 
 // Delete request to '/v1/games/gameID'
 // Removes a game lobby.
 // Conditions: Either all players leave the lobby or the creator deletes the lobby or the game is finished.
@@ -197,24 +200,24 @@ app.get("/:gameID", (req, res, next) => {
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
 app.delete("/:gameID", (req, res, next) => {
-    // if (!checkXUserHeader(req)) {
-    //         res.status(401).send("Unauthorized");
-    // } else {
-        console.log("Before sqlGETGameByID");
-        connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
-            if (err) {
-                res.status(500).send("Internal Server Error");
-            } else {
-                // need to check if there are no members in the channel still
-                console.log("Before check creator");
-                // if (checkIfCreator(req, result)) {
-                    // Delete from users_games
-                    console.log("before sqlDELETEGameFROMUsersGames")
-                    connection.query(sqlDELETEGameFROMUsersGames, [req.params.gameID], (err, result) => {
+    console.log("Before sqlGETGameByID");
+    connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
+        if (err) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            // need to check if there are no members in the channel still
+            console.log("before sqlDELETEGameFROMUsersGames")
+            connection.query(sqlDELETEGameFROMUsersGames, [req.params.gameID], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send("Internal Server Error.");
+                } else {
+                    // Remove from instances.
+                    connection.query(sqlDELETEGameInstanceByID, [req.params.gameID], (err, result) => {
                         if (err) {
-                            console.log(err);
-                            res.status(500).send("Internal Server Error.");
+                            res.status(500).send("Internal Server Error");
                         } else {
+                            // Remove from games.
                             connection.query(sqlDELETEGameByGameID, [req.params.gameID], (err, result) => {
                                 if (err) {
                                     console.log(err);
@@ -226,8 +229,10 @@ app.delete("/:gameID", (req, res, next) => {
                             })
                         }
                     })
-            }
-        })
+                }
+            })
+        }
+    })
 });
 
 ///////////////////////////////
@@ -280,12 +285,13 @@ app.post("/:gameID/players", (req, res, next) => {
     // }
 })
 
+// WORKS IN POSTMAN
 // Get request to '/:gameID/players'
 // Returns all the players currently in a game lobby/instance.
 // 201: Succesfully retrieves all players.
 // 500: Internal server error.
 app.get("/:gameID/players", (req, res, next) => {
-    connection.query(sqlGETPlayersByGameID, [req.params.gameID], (err, result) => {
+    connection.query(sqlGETUsersGames, [req.params.gameID], (err, result) => {
         if (err) {
             res.status(500).send("Internal Server Error");
         } else {
