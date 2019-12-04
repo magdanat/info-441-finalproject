@@ -443,7 +443,7 @@ app.patch(":gameID/:instanceID/message", (req, res, next) => {
                 res.set("Content-Type", "application/json");
                 res.json(result.messageBody);
             }
-        }
+        })
     }
 })
 
