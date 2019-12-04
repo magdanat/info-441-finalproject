@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"info-441-finalproject/servers/gateway/models/users"
-	"info-441-finalproject/servers/gateway/sessions"
+	"assignments-sethanderson8/servers/gateway/models/users"
 )
 
 //TODO: define a handler context struct that
@@ -14,8 +13,6 @@ import (
 
 //HandlerContext gives handler functions access to gloabls
 type HandlerContext struct {
-	SigningKey   string               `json:"signingKey,omitempty"`
-	SessionStore *sessions.RedisStore `json:"sessionStore,omitempty"`
 	UserStore    *users.MySQLStore    `json:"userStore,omitempty"`
-	Notifier     *Notifier
+	Notifier			*Notifier
 }

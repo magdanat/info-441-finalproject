@@ -1,0 +1,147 @@
+#Page {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    font-family: "Arial Black", Gadget, sans-serif;
+    height:100vh;
+}
+#Content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Arial Black", Gadget, sans-serif;
+  background: url(../assets/uw_logo.png) repeat center center fixed;
+  margin-top: 6%;
+  height: 100%;
+  background-size: 70px 50px;
+}
+
+#Header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  /* center the element */
+  right: 0;
+  left: 0;
+  margin-right: auto;
+  margin-left: auto;
+  /* give it dimensions */
+  height: 10%;
+  padding-top: .7%;
+  padding-bottom: .7%;
+  width: 100%;
+  background-color: #c9ae6e;
+  border-bottom: 3px solid rgb(62, 1, 105) ;
+}
+
+#Header img {
+  height:80px;
+  padding-left: 0px;
+  padding-right: 20px;
+}
+
+#Header h1 {
+  color: rgb(62, 1, 105);
+  font-size: 5.1em;
+  padding-bottom: .1em;
+}
+
+#SignUpContainer {
+  background-color:rgb(255, 252, 241);
+  width:50%;
+  border: 3px solid rgb(62, 1, 105);
+  border-radius: 10px;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#SignUpContainer p {
+  padding-left:1em;
+  padding-right:1em;
+}
+
+#SignUpContainer form {
+  display: flex;
+  flex-direction: row;
+}
+#SignUpContainer button {
+  margin-left: 10px;
+}
+
+p { word-break: normal; }
+
+#DrawingContent {
+  background-color:rgb(255, 252, 241);
+  border: 3px solid rgb(62, 1, 105);
+  border-radius: 10px;
+  padding:1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#Canvas {
+  border: black solid 1px;
+}
+
+#BrushSize {
+  width: 3em;
+}
+
+#GuessContent {
+  padding-top: 5px;
+}
+
+#GuessContent h2 {
+  padding:0;
+}
+
+#GameListContainer {
+  height: 75%;
+  width: 50%;
+  background-color: rgb(255, 252, 241);
+  border: 3px solid rgb(62, 1, 105);
+  border-radius: 10px;
+}
+
+#GameCreatorContainer {
+  height: 30%;
+  width: 30%;
+  background-color: rgb(255, 252, 241);
+  border: 3px solid rgb(62, 1, 105);
+  border-radius: 10px;
+}
+
+#GameCreatorContent {
+  height:50%;
+  background-color: rgba(226, 223, 213, 0.938);
+}
+
+#ScrollingGameList {
+  overflow-y:auto;
+  height:75%;
+  background-color: rgba(226, 223, 213, 0.938);
+}
+
+#GameListHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#GameListHeader h1 {
+  width: 80%;
+}
+
+
+#NewGameButton {
+  height: 30px;
+  width: 85px;
+}
