@@ -23,6 +23,8 @@ type msg struct {
 	Type    string  `json:"type"`
 	Message string  `json:"message"`
 	UserIDs []int64 `json:"userIDs"`
+	Username string `json:"username"`
+	Sender int64 `json:"sender"`
 }
 
 // InsertConnection is a thread-safe method for inserting a connection
@@ -70,7 +72,7 @@ func (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *
 		}
 
 		// Inserts our connection into our datastructure for ongoing usage
-		ctx.InsertConnection(currentState.User.ID, conn)
+		ctx.InsertConnection(int64(len(ctx.Notifier.connections) + 1), conn)
 
 		go (func(conn *websocket.Conn, connID int64) {
 			for { // infinite loop
@@ -85,7 +87,7 @@ func (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *
 					// Close websocket
 					conn.Close()
 					// Remove from list
-					ctx.RemoveConnection(currentState.User.ID)
+					ctx.RemoveConnection(int64(len(ctx.Notifier.connections) + 1))
 					break
 				}
 
@@ -93,7 +95,7 @@ func (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *
 					fmt.Println(err)
 				}
 			}
-		})(conn, currentState.User.ID)
+		})(conn, int64(len(ctx.Notifier.connections) + 1))
 
 	} else {
 		http.Error(w, "Websocket Connection", 403)

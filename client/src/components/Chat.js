@@ -74,9 +74,10 @@ export default class Chat extends React.Component {
     console.log(this.state.curMessage)
     // TODO need to send the guess to backend
     let message = {
-      userID: this.props.userID,
+      sender: this.props.userID,
       username: this.props.username,
-      message: this.state.curMessage
+      message: this.state.curMessage,
+      uesrIDs: []
     }
     try {
       this.ws.send(message) //send data to the server

@@ -22,7 +22,10 @@ func (ctx *HandlerContext) UsersHandler(w http.ResponseWriter, r *http.Request) 
 			json.NewDecoder(r.Body).Decode(newUser)
 
 			// Adding new user to database
-			userObj = ctx.UserStore.Insert(newUser)
+			userObj, err := ctx.UserStore.Insert(newUser)
+			if(err != nil) {
+				http.Error(w, "Could not insert user", http.StatusMethodNotAllowed)
+			}
 
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Set("Content-Type", "application/json")
