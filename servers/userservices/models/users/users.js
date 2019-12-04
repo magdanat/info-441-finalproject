@@ -19,7 +19,7 @@ let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
     host: '127.0.0.1',
     user: 'root',
-    password: '123456789',
+    password: 'password',
     database: 'scribble'
 });
 
@@ -53,7 +53,7 @@ function sendMessageToRabbitMQ(msg) {
 // 201: Successfully creates a new user and inserts it into the database.
 // 500: Internal server error
 app.post("/", (req, res, next) => {
-    let username = req.body.susername  
+    let username = req.body.username;
     connection.query(sqlPOSTUsers, [username], (err, result) => {
         if (err) {
             console.log("Result: " + result);

@@ -3,6 +3,7 @@ import './styles/Home.css';
 import Header from './components/Header';
 import { Button, Form} from "react-bootstrap";
 import {Link} from 'react-router-dom';
+import GameListItem from './components/GameListItem';
 
 export default class GameList extends React.Component {
   constructor(props) {
@@ -10,10 +11,13 @@ export default class GameList extends React.Component {
     if(this)
     this.state ={
       create: false,
-      loading: true
+      loading: true,
+      gameDesc: "",
+      gameName: ""
     }
     this.gameListOrCreate = this.gameListOrCreate.bind(this);
     this.setState = this.setState.bind(this)
+    this.createGameList = this.createGameList.bind(this)
   }
 
   componentDidMount() {
@@ -39,6 +43,34 @@ export default class GameList extends React.Component {
     } else {
       this.setState({loading:false})
     }
+
+    fetch('http://localhost:80/v1/games', {
+      method: 'GET', 
+      headers:{
+        'Content-Type': 'application/json',
+      }
+    }).then((response) => {return response.json()})
+    .then((responseJSON) => {
+      this.setState({
+        games: responseJSON
+      })
+    })
+  }
+
+  createGameList() {
+    if(this.state.games != undefined) {
+      const renderedGames = this.state.games.reverse().map((game, index) => {
+        return (
+          <GameListItem name={game.LobbyName} id={game.GameID} desc={game.LobbyDesc} userID={this.state.userID} username={this.state.username}/>
+        )
+      })
+  
+      return(
+        <div>
+          {renderedGames}
+        </div>
+      )
+    }
   }
 
   gameListOrCreate() {
@@ -47,13 +79,12 @@ export default class GameList extends React.Component {
         <div id="GameCreatorContainer">
         <h1>Create a New Game</h1>
           <div id="GameCreatorContent">
-          <form onSubmit={this.onClickPlay}>
+          <form onSubmit={this.onClickCreate}>
               <Form.Group controlId="email" bsSize="large">
                 <Form.Label>Game Name:</Form.Label>
                 <Form.Control
                   autoFocus
                   type="text"
-
                   onChange={e => this.setState({gameName: e.target.value})}
                 />
               </Form.Group>
@@ -69,7 +100,13 @@ export default class GameList extends React.Component {
               <Button block bsSize="large" type="submit" onClick={() => this.setState({create: false})}>
                   Back
               </Button>
-              <Link to="game">
+              <Link to={{pathname: "game",
+                state:{gameDesc: this.state.gameDesc,
+                       gameName: this.state.gameName,
+                       userID: this.state.userID,
+                       username: this.state.username,
+                       creator: true}
+              }}>
                 <Button block bsSize="large" type="submit">
                   Create Game
                 </Button>
@@ -88,30 +125,7 @@ export default class GameList extends React.Component {
             </Button>
           </div>
           <div id="ScrollingGameList">
-            <h1>jdksjd</h1>
-
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd</h1>
-            <h1>jdksjd1</h1>
-
+            {this.createGameList()}
           </div>
         </div>
       )

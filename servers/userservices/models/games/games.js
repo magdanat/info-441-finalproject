@@ -10,7 +10,7 @@ const app = express.Router();
 
 // SQL Queries /v1/game
 const sqlGETAllGames = "SELECT * FROM games";
-const sqlGETGameByID = "SELECT * FROM games WHERE GameID = ?";
+const sqlGETGameByID = "SELECT * FROM Games WHERE GameID = ?";
 const sqlPOSTGame = "INSERT INTO games (LobbyName, LobbyDesc, GameCreator) VALUES(?, ?, ?)"
 
 // SQL Queries /v1/game/:gameID
@@ -23,7 +23,7 @@ const sqlDELETEGameInstanceByID = "DELETE FROM games_instance WHERE GameID = ?";
 // SQL Queries /v1/game/:gameID/players
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
 const sqlDELETEGamePlayerByID = "DELETE FROM users_game WHERE UserID = ? AND GameID = ?";
-const sqlGETUsersGames = "SELECT * FROM users_game WHERE GameID = ?";
+const sqlGETUsersGames = "SELECT * FROM users_game ug JOIN users u ON ug.UserID = u.UserID WHERE GameID = ?";
 
 const sqlGETGameInstanceByID = "SELECT * FROM Games_Instance WHERE GameID = ?";
 const sqlPOSTGameInstance = "INSERT INTO Games_Instance (GameID, NumberOfRounds, BoardID) VALUES(?, ?, ?)"
@@ -41,7 +41,7 @@ let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
     host: '127.0.0.1',
     user: 'root',
-    password: '123456789',
+    password: 'password',
     database: 'scribble'
 });
 
@@ -105,24 +105,32 @@ app.post("/", (req, res, next) => {
     //     res.status(401).send("Unauthorized");
     // } else {
         let user = req.body.user;
-        let name = user.userName + "'s Lobby";
+        let name = req.body.name;
         let description = req.body.description ? req.body.description : "";
         // sql request to insert 
         // not sure if correctly grabbing userID here
-        connection.query(sqlPOSTGame, [name, description, user.id], (err, result) => {
+        console.log(user.userID)
+        connection.query(sqlPOSTGame, [name, description, parseInt(user.userID)], (err, result) => {
             if (err) {
                 console.log("Error: " + err);
                 res.status(500).send("Internal Server Error");
             } else {
-                console.log(result.insertId)
-                connection.query(sqlPOSTUserGames, [result.insertId, user.id], (err, result) => {
+                let gameID = result.insertId;
+                connection.query(sqlPOSTUserGames, [result.insertId, parseInt(user.userID)], (err, result) => {
                     if (err) {
                         console.log("Error: " + err);
                         res.status(500).send("Internal Server Error");
                     } else {
-                        res.status(201);
-                        res.set("Content-Type", "application/json");
-                        res.json(result);
+                        connection.query(sqlGETGameByID, [gameID], (err, result) => {
+                            if (err) {
+                                res.status(500).send("Internal Server Error");
+                            } else {
+                                let game = result[0];
+                                res.status(201);
+                                res.set("Content-Type", "application/json");
+                                res.json(game);
+                            }
+                        })
                     }
                 }) 
             }
@@ -146,12 +154,11 @@ app.get("/:gameID", (req, res, next) => {
     // if (!checkXUserHeader(req)) {
     //     res.status(401).send("Unauthorized");
     // } else {
-        connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
+        connection.query(sqlGETGameByID, req.params.gameID, (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
             } else {
-                let game = result[0];
-                res.status(201);
+                res.status(200);
                 res.set("Content-Type", "application/json");
                 res.json(result);
             }
