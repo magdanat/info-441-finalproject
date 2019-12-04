@@ -38,7 +38,7 @@ export default class Home extends React.Component {
                   onChange={e => this.handleUserNameChange(e.target.value)}
                 />
               </Form.Group>
-              <Link to={{pathname: "gamelist",
+              <Link to={{pathname: "gamechat",
                 state:{createNewUser: this.state.username}
               }}
               >

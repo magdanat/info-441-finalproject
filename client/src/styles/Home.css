@@ -134,6 +134,7 @@ p { word-break: normal; }
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
+  border-bottom: black 2px solid;
 }
 
 #GameListHeader h1 {
@@ -144,4 +145,77 @@ p { word-break: normal; }
 #NewGameButton {
   height: 30px;
   width: 85px;
+}
+
+#GameListItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  justify-content: left;
+  border-left: black 2px solid;
+  border-bottom: black 2px solid;
+  border-right: black 2px solid;
+
+}
+
+#GameListItem h3 {
+  width: 40%;
+  font-size: 1em;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  display: inline-block;
+  overflow: hidden;
+  padding-left: 5px;
+}
+
+#GameListItem h2 {
+  width:30%;
+  height:100%;
+  padding-left: 5px;
+  text-overflow: ellipsis;
+  display: inline-block;
+  overflow: hidden;
+}
+
+#UserListContainer {
+  height: 500px;
+  width: 25%;
+  background-color: rgb(255, 252, 241);
+  border: 3px solid rgb(62, 1, 105);
+  border-radius: 10px;
+}
+
+#GamePage {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
+#Username {
+  font-size: .7em;
+  color: rgb(62, 1, 105);
+  width:25%;
+}
+
+#MessageContainer {
+  overflow-y:scroll;
+  height: 70%;
+  background-color: rgb(231, 223, 210);
+}
+
+#UserContainer {
+  display: flex;
+  flex-direction: row;
+  border-bottom: dashed black 1px;
+}
+
+#Message {
+  font-size: .8em;
+  margin-left: 1em;
+  padding-right: 1em;
+  width: 240px;
+  word-wrap: break-word;
 }
