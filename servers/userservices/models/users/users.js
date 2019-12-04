@@ -52,28 +52,8 @@ function sendMessageToRabbitMQ(msg) {
 // Creates a new user.
 // 201: Successfully creates a new user and inserts it into the database.
 // 500: Internal server error
-<<<<<<< HEAD
-app.post("/",  (req, res, next) => {
-  if (!checkXUserHeader(req)) {
-      res.status(401).send("Unauthorized");
-  } else {
-      let username = req.body.username  
-      connection.query(sqlPOSTUsers, [username], (err, result) => {
-          if (err) {
-            console.log(err)
-            console.log(req)
-            console.log(req.body)
-              res.status(500).send("Internal Server Error.");
-          } else {
-              res.status(201);
-              res.set("Content-Type", "application/json");
-              res.json(result);
-          }
-      })
-  }
-=======
 app.post("/", (req, res, next) => {
-    let username = req.body.username  
+    let username = req.body.susername  
     connection.query(sqlPOSTUsers, [username], (err, result) => {
         if (err) {
             console.log("Result: " + result);
@@ -85,7 +65,6 @@ app.post("/", (req, res, next) => {
             res.json(result);
         }
     })
->>>>>>> 38adcfc7601584146d94aa0ff84e5884f661ee3d
 });
 
 // Get Request to '/v1/users'
@@ -111,14 +90,6 @@ app.delete("/", (req, res, next) => {
 // HELPER METHODS //
 ////////////////////
 
-<<<<<<< HEAD
-// Function to see if X-User header is present in request
-function checkXUserHeader(req) {
-  return true;
-}
-
-=======
->>>>>>> 38adcfc7601584146d94aa0ff84e5884f661ee3d
 // Function that checks if the current user is the creator of the channel, will send a forbidden request
 // if the user is not the creator
 function checkIfCreator(req, result) {
