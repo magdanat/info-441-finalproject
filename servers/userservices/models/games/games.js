@@ -22,6 +22,7 @@ const sqlDELETEGameByGameID = "DELETE FROM games WHERE GameID = ?";
 // SQL Queries /v1/game/:gameID/players
 const sqlPOSTUserGames = "INSERT INTO users_game (GameID, UserID) VALUES (?, ?)"
 const sqlDELETEGamePlayerByID = "DELETE FROM users_game WHERE UserID = ? AND GameID = ?";
+const sqlGETUsersGames = "SELECT * FROM users_game WHERE GameID = ?";
 
 const sqlGETGameInstanceByID = "SELECT * FROM Games_Instance WHERE GameInstanceID = ?";
 const sqlPOSTGameInstance = "INSERT INTO Games_Instance (GameID, NumberOfRounds, BoardID) VALUES(?, ?, ?)"
@@ -39,7 +40,7 @@ let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
     host: '127.0.0.1',
     user: 'root',
-    password: 'password',
+    password: '123456789',
     database: 'scribble'
 });
 
@@ -70,15 +71,16 @@ function sendMessageToRabbitMQ(msg) {
 
 // Refers to all current games.
 
+// WORKS IN POSTMAN
 // Get request to '/v1/game'
 // Gets all current active games.
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
 app.get("/", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         connection.query(sqlGETAllGames, [], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
@@ -88,34 +90,44 @@ app.get("/", (req, res, next) => {
                 res.json(result);
             }
         })
-    }
+    // }
 });
 
+// WORKS IN POSTMAN
 // Post request to '/v1/game'
 // Creates a new game lobby.
 // 201: Successfully creates a new game
 // 401: Cannot verify players id_value
 // 500: Internal server error
 app.post("/", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        let user = JSON.parse(req.get('X-User'));
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
+        let user = req.body.user;
         let name = user.userName + "'s Lobby";
         let description = req.body.description ? req.body.description : "";
         // sql request to insert 
         // not sure if correctly grabbing userID here
         connection.query(sqlPOSTGame, [name, description, user.id], (err, result) => {
             if (err) {
+                console.log("Error: " + err);
                 res.status(500).send("Internal Server Error");
             } else {
-                res.status(201);
-                res.set("Content-Type", "application/json");
-                res.json(result);
+                console.log(result.insertId)
+                connection.query(sqlPOSTUserGames, [result.insertId, user.id], (err, result) => {
+                    if (err) {
+                        console.log("Error: " + err);
+                        res.status(500).send("Internal Server Error");
+                    } else {
+                        res.status(201);
+                        res.set("Content-Type", "application/json");
+                        res.json(result);
+                    }
+                }) 
             }
             // Need to send event to RabbitMQ Server
         })
-    }
+    // }
 });
 
 //////////////////////
@@ -124,16 +136,16 @@ app.post("/", (req, res, next) => {
 
 // Refers to a specific game identified by {gameID}.
 
+// WORKS IN POSTMAN
 // Get request to '/v1/game/:gameID'
 // Gets current game information.
 // 200: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
 app.get("/:gameID", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        // !!! UNSURE OF HOW TO GET CURRENT GAME ID vvv !!!!
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
@@ -144,9 +156,10 @@ app.get("/:gameID", (req, res, next) => {
                 res.json(result);
             }
         })
-    }
+    // }
 });
 
+// UNTESTED IN POSTMAN
 // Patch request to '/v1/game/gameID'
 // Update current game name, description, players, etc. 
 // Conditions: Only the creator of the game should be able to change game information.
@@ -156,9 +169,9 @@ app.get("/:gameID", (req, res, next) => {
 // 500: Internal server error
 // Might need to add a condition where once a game is started, the game is closed and no one can
 app.patch("/:gameID", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         // let user = JSON.parse(req.get('X-User'));
         if (checkIfCreator(req, result)) {
             let lobbyDesc = req.body.description ? req.body.description : "";
@@ -174,26 +187,29 @@ app.patch("/:gameID", (req, res, next) => {
                 }
             })
         }
-    }
+    // }
 });
 
-// Delete request to '/v1/game/gameID'
+// Delete request to '/v1/games/gameID'
 // Removes a game lobby.
 // Conditions: Either all players leave the lobby or the creator deletes the lobby or the game is finished.
 // 201: application/json. Successfully deletes game.
 // 401: player attemtps to delete game that they did not create. 
 // 500: Internal server error
 app.delete("/:gameID", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-            res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //         res.status(401).send("Unauthorized");
+    // } else {
+        console.log("Before sqlGETGameByID");
         connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
             } else {
                 // need to check if there are no members in the channel still
+                console.log("Before check creator");
                 if (checkIfCreator(req, result)) {
                     // Delete from users_games
+                    console.log("before sqlDELETEGameFROMUsersGames")
                     connection.query(sqlDELETEGameFROMUsersGames, [req.params.gameID], (err, result) => {
                         if (err) {
                             res.status(500).send("Internal Server Error.");
@@ -211,7 +227,6 @@ app.delete("/:gameID", (req, res, next) => {
                                             res.status(500).send("Internal Server Error");
                                         } else {
                                             res.status(200).send("Delete was successful.")
-
                                             // Send event to RabbitMQ Server
                                         }
                                     })
@@ -222,7 +237,7 @@ app.delete("/:gameID", (req, res, next) => {
                 }
             }
         })
-    } 
+    // } 
 });
 
 ///////////////////////////////
@@ -231,32 +246,48 @@ app.delete("/:gameID", (req, res, next) => {
 
 // Refers to current players in the game lobby.
 
+// WORKS IN POSTMAN
 // Post request to '/v1/game/:gameID/players
 // Adds a new player to the game lobby.
 // 201: application/json. Successfully adds user to game instance.
 // 500: Internal server error
-app.post(":gameID/players", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        connection.query(sqlGetGameByID, [req.params.gameID], (err, result) => {
+app.post("/:gameID/players", (req, res, next) => {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
+        connection.query(sqlGETGameByID, [req.params.gameID], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
             } else {
                 let userID = req.body.id
-                connection.query(sqlPOSTUserGames, [req.params.gameID, userID], (err, resullt) => {
+                connection.query(sqlGETUsersGames, [req.params.gameID], (err, result) => {
                     if (err) {
-                        res.status(500).send("Internal Server Error");
+                        console.log(err);
+                        res.status(500).send("Internal Server Error")
                     } else {
-                        res.status(201);
-                        res.send("User was added as a member of the game instance.");
-
-                        //RabbitMQ event
+                        // need to check the current size of the lobby before allowing a user to enter.
+                        // cannot allow user to join lobby if lobby is at the max players.
+                        // do a query call to select all users from users_games with for gameID. if
+                        // the size of the return is larger than 4, do not allow user to join.
+                        if (result.length != 4 && result.length < 4) {
+                            connection.query(sqlPOSTUserGames, [req.params.gameID, userID], (err, result) => {
+                                if (err) {
+                                    res.status(500).send("Internal Server Error");
+                                } else {
+                                    res.status(201);
+                                    res.set("Content-Type", "application/json");
+                                    res.json(result);
+                                    //RabbitMQ event
+                                }
+                            })
+                        } else {
+                            res.send("Lobby is full!");
+                        }
                     }
                 })
             }
         })
-    }
+    // }
 })
 
 // DELETE request to '/v1/game/:gameID/players
@@ -265,9 +296,9 @@ app.post(":gameID/players", (req, res, next) => {
 // 201: application/json. Successfully adds user to game instance.
 // 500: Internal server error
 app.delete(":gameID/players", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         connnection.query(sqlGetGamesByID, [req.params.gameID], (err, result) => {
             if (err) {
                 res.status(500).send("Internal Server Error");
@@ -278,13 +309,12 @@ app.delete(":gameID/players", (req, res, next) => {
                         res.status(500).send("Internal Server Error");
                     } else {
                         res.status(200).send("Delete was successful.");
-
                         //RabbitMQ event
                     }
                 })
             }
         })
-    }
+    // }
 })
 
 // Perhaps consider putting all the API requests below this comment
@@ -306,9 +336,9 @@ app.delete(":gameID/players", (req, res, next) => {
 // 201: application/json. Sucecessfully creates a game instance.
 // 500: Internal server error.
 app.post(":gameID/instance", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         // create a board, get the board ID in return
         let newBoard = ""; // empty string = blank board
         connection.query(sqlPOSTBoard, [newBoard], (err, result) => {
@@ -325,7 +355,7 @@ app.post(":gameID/instance", (req, res, next) => {
             })
 
         })
-    }
+    // }
 })
 
 // Patch request to '/v1/game/:gameID/:instanceID
@@ -335,9 +365,9 @@ app.post(":gameID/instance", (req, res, next) => {
 // 201: application/json. Successfully makes changes to the game instance.
 // 500: Internal server error.
 app.patch(":gameID/instanceID", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         // query current game instance and get all data
         connection.query(sqlGETGameInstanceBYID, [req.params.instanceID], (err, result) => {
             if (err) {
@@ -362,7 +392,7 @@ app.patch(":gameID/instanceID", (req, res, next) => {
                 })
             }
         })
-    }
+    // }
 })
 
 /////////////////////////////////////
@@ -374,9 +404,9 @@ app.patch(":gameID/instanceID", (req, res, next) => {
 // I imagine this will be used when the board is reset
 // every turn or once the current drawer changes. 
 app.patch(":gameID/instance/board", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         // 
         connection.query(sqlGETGameInstanceByID, [req.params.instanceID], (err, result) => {
             if (err) {
@@ -395,7 +425,7 @@ app.patch(":gameID/instance/board", (req, res, next) => {
             }
         })
 
-    }
+    // }
 })
 
 
@@ -410,9 +440,9 @@ app.patch(":gameID/instance/board", (req, res, next) => {
 // 201: application/json. Sucecessfully create message
 // 500: Internal server error.
 app.post(":gameID/:instanceID/message", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         // get userID, get gameID
 
 
@@ -425,16 +455,16 @@ app.post(":gameID/:instanceID/message", (req, res, next) => {
                 res.json(result);
             }
         })
-    }
+    // }
 })
 
 
 // Patch 
 // 
 app.patch(":gameID/:instanceID/message", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
+    // if (!checkXUserHeader(req)) {
+    //     res.status(401).send("Unauthorized");
+    // } else {
         connection.query(sqlPATCHMessage, [req.body.messageBody, req.params.messageID], (err, result) => {
             if(err) {
                 res.status(500).send("Internal Server Error");
@@ -444,7 +474,7 @@ app.patch(":gameID/:instanceID/message", (req, res, next) => {
                 res.json(result.messageBody);
             }
         })
-    }
+    // }
 })
 
 
@@ -455,23 +485,25 @@ app.patch(":gameID/:instanceID/message", (req, res, next) => {
 ////////////////////
 
 // Function to see if X-User header is present in request
-function checkXUserHeader(req) {
-    let xUserHeader = req.get('X-User');
-    if(xUserHeader == undefined || xUserHeader == "") {
-      return false;
-    } else {
-      return true;
-    }
-}
+// function checkXUserHeader(req) {
+//     let xUserHeader = req.get('X-User');
+//     if(xUserHeader == undefined || xUserHeader == "") {
+//       return false;
+//     } else {
+//       return true;
+//     }
+// }
 
 // Function that checks if the current user is the creator of the channel, will send a forbidden request
 // if the user is not the creator
 function checkIfCreator(req, result) {
     let game = result[0];
-    let user = JSON.parse(req.get('X-User'));
-    if (game.gameCreator == user.id) {
+    // let user = JSON.parse(req.get('X-User'));
+    if (game.gameCreator == req.user.id) {
+        console.log(game);
         return true;
     } else {
+        console.log(game);
         return false;
     }
 }

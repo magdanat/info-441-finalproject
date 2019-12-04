@@ -18,7 +18,7 @@ let connection = mysql.createPool({
     // We are going to need to set this ENV variable, TODO
     host: '127.0.0.1',
     user: 'root',
-    password: 'password',
+    password: '123456789',
     database: 'scribble'
 });
 
@@ -52,12 +52,14 @@ function sendMessageToRabbitMQ(msg) {
 // 201: Successfully creates a new user and inserts it into the database.
 // 500: Internal server error
 app.post("/", (req, res, next) => {
-  if (!checkXUserHeader(req)) {
-      res.status(401).send("Unauthorized");
-  } else {
+  // if (!checkXUserHeader(req)) {
+  //     res.status(401).send("Unauthorized");
+  // } else {
       let username = req.body.username  
       connection.query(sqlPOSTUsers, [username], (err, result) => {
           if (err) {
+              console.log("Result: " + result);
+              console.log("Error: " + err);
               res.status(500).send("Internal Server Error.");
           } else {
               res.status(201);
@@ -65,7 +67,7 @@ app.post("/", (req, res, next) => {
               res.json(result);
           }
       })
-  }
+  // }
 });
 
 // Get Request to '/v1/users'
@@ -77,8 +79,8 @@ app.post("/", (req, res, next) => {
 // 201: Succesffully deletes a user from the database.
 // 500: Internal Server error.
 app.delete("/", (req, res, next) => {
-  if (!checkXUserHeader(req)) {
-  } else {
+  // if (!checkXUserHeader(req)) {
+  // } else {
       connection.query(sqlDELETEUsersByID, [req.body.userid], (err, result) => {
         if (err) {
           res.status(500).send("Internal Server Error.");
@@ -87,22 +89,22 @@ app.delete("/", (req, res, next) => {
           //Rabbit mq.
         }
       }) 
-  }
+  // }
 });
 
 ////////////////////
 // HELPER METHODS //
 ////////////////////
 
-// Function to see if X-User header is present in request
-function checkXUserHeader(req) {
-    let xUserHeader = req.get('X-User');
-    if(xUserHeader == undefined || xUserHeader == "") {
-      return false;
-    } else {
-      return true;
-    }
-}
+// // Function to see if X-User header is present in request
+// function checkXUserHeader(req) {
+//     let xUserHeader = req.get('X-User');
+//     if(xUserHeader == undefined || xUserHeader == "") {
+//       return false;
+//     } else {
+//       return true;
+//     }
+// }
 
 // Function that checks if the current user is the creator of the channel, will send a forbidden request
 // if the user is not the creator

@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS Users (
 -- Game Models
 CREATE TABLE IF NOT EXISTS Games (
     GameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    CreatedAt DATETIME NOT NULL,
     LobbyName VARCHAR(128) NOT NULL,
     LobbyDesc VARCHAR(128),   
     MaxPlayers INT DEFAULT 4, 
@@ -15,8 +14,8 @@ CREATE TABLE IF NOT EXISTS Games (
     NumberOfRounds INT DEFAULT 3,
     -- Array of Words
     GameCreator INT,
-    FOREIGN KEY (GameCreator) references Users(UserID),
-    DrawingTimer INT NOT NULL
+    FOREIGN KEY (GameCreator) references Users(UserID)
+    -- DrawingTimer INT NOT NULL
 
     
     -- TimeElapsed INT
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS Games_Instance (
     CurrentRound INT DEFAULT 0,
     CurrentWord VARCHAR(128), 
     Winner VARCHAR(128), 
-    Score INT DEFAULT 500
+    Score INT DEFAULT 500 -- Handle scoring in front end
 );
 
 
