@@ -5,7 +5,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"net/http"
+	"net/http/httputil"
+	"strings"
 	"info-441-finalproject/servers/gateway/handlers"
+	"info-441-finalproject/servers/gateway/models/users"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -33,6 +38,9 @@ func main() {
 	}
 
 	defer db.Close()
+	userStore := &users.MySQLStore{
+		Database: db,
+	}
 	
 	context := &handlers.HandlerContext { 
 		UserStore: userStore,
@@ -40,7 +48,7 @@ func main() {
 	}
 
 	handlers.ConnectToRabbitMQ(context)
-	mux := http.NewServerMux()
+	mux := http.NewServeMux()
 
 	// // Microservices in js
 	// gamesADDR := os.Getenv("GAMESADDR")
