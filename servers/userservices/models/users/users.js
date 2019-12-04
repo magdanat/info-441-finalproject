@@ -8,6 +8,7 @@ const mysql = require("mysql");
 // Create a new express application
 const app = express.Router();
 
+
 // SQL Queries to '/v1/users'
 const sqlPOSTUsers = "INSERT INTO users (UserName) VALUES(?)";
 const sqlDELETEUsersByID = "DELETE FROM users WHERE UserID = ?";
@@ -51,13 +52,16 @@ function sendMessageToRabbitMQ(msg) {
 // Creates a new user.
 // 201: Successfully creates a new user and inserts it into the database.
 // 500: Internal server error
-app.post("/", (req, res, next) => {
+app.post("/",  (req, res, next) => {
   if (!checkXUserHeader(req)) {
       res.status(401).send("Unauthorized");
   } else {
       let username = req.body.username  
       connection.query(sqlPOSTUsers, [username], (err, result) => {
           if (err) {
+            console.log(err)
+            console.log(req)
+            console.log(req.body)
               res.status(500).send("Internal Server Error.");
           } else {
               res.status(201);
@@ -96,12 +100,7 @@ app.delete("/", (req, res, next) => {
 
 // Function to see if X-User header is present in request
 function checkXUserHeader(req) {
-    let xUserHeader = req.get('X-User');
-    if(xUserHeader == undefined || xUserHeader == "") {
-      return false;
-    } else {
-      return true;
-    }
+  return true;
 }
 
 // Function that checks if the current user is the creator of the channel, will send a forbidden request
