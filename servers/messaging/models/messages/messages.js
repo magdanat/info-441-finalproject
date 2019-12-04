@@ -11,8 +11,6 @@ const app = express.Router();
 
 // Used for PATCH for messages
 const sqlGETMessageByID = "SELECT * FROM messages WHERE MessageID = ?";
-const sqlPATCHMessageByID = "UPDATE messages SET MessageBody = ? WHERE MessageID = ?"
-const sqlDELETEMessageByID = "DELETE FROM messages WHERE MessageID = ?"
 
 // Connecting to the mysql database
 let connection = mysql.createPool({
@@ -23,11 +21,8 @@ let connection = mysql.createPool({
     database: process.env.MYSQL_DB
 });
 
-// Need to import function
-// import {sendMessageToRabbitMQ} from '../channels/channels.js'
-// this.sendMessageToRabbitMQ = sendMessageToRabbitMQ();
-
 const amqp = require('amqplib/callback_api');
+
 function sendMessageToRabbitMQ(msg) {
     amqp.connect("amqp://" + process.env.RABBITADDR, (error0, conn) => {
         if (error0) {
@@ -51,11 +46,7 @@ function sendMessageToRabbitMQ(msg) {
 
 // POST request to v1/channels/:channelID
 app.post("/:channelID", (req, res, next) => {
-    if (!checkXUserHeader(req)) {
-        res.status(401).send("Unauthorized");
-    } else {
-        let user = JSON.parse(req.get('X-User'));
-        let message = req.body.body;
+    let message = req.body.body;
         // Need to check if this is a private channel
         connection.query(sqlGETChannelByID, [req.params.channelID], (err, result) => {
             if (err) {

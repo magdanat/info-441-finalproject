@@ -40,7 +40,6 @@ func main() {
 	}
 
 	handlers.ConnectToRabbitMQ(context)
-
 	mux := http.NewServerMux()
 
 	// // Microservices in js
@@ -52,10 +51,7 @@ func main() {
 	// mux.Handle("/v1/users/", createReverseProxy(usersADDR, context))
 
 	// Handlerfunctions
-	// mux.HandleFunc("/v1/users", context.UsersHandler)
-	// mux.HandleFunc("/v1/users/", context.SpecificUserHandler)
-	// mux.HandleFunc("/v1/sessions", context.SessionsHandler)
-	// mux.HandleFunc("/v1/sessions/", context.SpecificSessionHandler)
+	mux.HandleFunc("/v1/users", context.UsersHandler)
 
 	messADDR := os.Getenv("MESSAGESADDR")
 	mux.Handle("/v1/messages", createReverseProxy(messADDR, context))
@@ -78,21 +74,7 @@ func createReverseProxy(addresses string, context *handlers.HandlerContext) *htt
 		req.URL.Scheme = "http"
 		req.URL.Host = splitAddresses[addrCounter%len(splitAddresses)]
 		addrCounter++
-
-		// // Need to check user authentication here
-		// // Only add a user header if they are authenticated
 		
-		// authorization := req.Header.Get("Authorization")
-		// if len(authorization) != 0 {
-		// currentState := &handlers.SessionState{}
-		// sessionID, err := sessions.GetState(req, context.SigningKey, context.SessionStore, currentState)
-		// if sessionID != sessions.InvalidSessionID && err == nil {
-		// 	currentUser := currentState.User
-		// 	jsonUser, _ := json.Marshal(currentUser)
-		// 	req.Header.Set("X-User", string(jsonUser))
-		// }
-		// }
-
 	}
 	proxy := &httputil.ReverseProxy{Director: director}
 	return proxy

@@ -8,3 +8,11 @@ type User struct {
 	// LastName  string `json:"lastName"`
 	// PhotoURL  string `json:"photoURL"`
 }
+
+//NewUser converts the NewUser to a User, setting the
+//PhotoURL and PassHash fields appropriately
+func (nu *User) NewUser() (*User, error) {
+	usr := new(User)
+	usr.UserName = nu.UserName
+	return usr, nil
+}
