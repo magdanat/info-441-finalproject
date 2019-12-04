@@ -128,7 +128,6 @@ app.post("/", (req, res, next) => {
             }
             // Need to send event to RabbitMQ Server
         })
-    // }
 });
 
 //////////////////////
@@ -140,7 +139,7 @@ app.post("/", (req, res, next) => {
 // WORKS IN POSTMAN
 // Get request to '/v1/game/:gameID'
 // Gets current game information.
-// 200: Successfully retrieves current game information
+// 201: Successfully retrieves current game information
 // 401: Attempts to access game which player is not part of
 // 500: Internal server error
 app.get("/:gameID", (req, res, next) => {
@@ -341,7 +340,7 @@ app.delete("/:gameID/players", (req, res, next) => {
 // ect.
 
 // WORKS IN POSTMAN
-// Post request to '/v1/game/:gameID/:instanceID
+// Post request to '/v1/game/:gameID/instance
 // Creates a new game instance. *the actual game*
 // 201: application/json. Sucecessfully creates a game instance.
 // 500: Internal server error.
@@ -370,6 +369,22 @@ app.post("/:gameID/instance", (req, res, next) => {
 })
 
 // WORKS IN POSTMAN
+// Get request to '/v1/game/:gameID/instance
+// Retrieves current game instance information such as scores.
+// 201: application/json. Successfully retrieves game information.
+app.get("/:gameID/instance", (req, res, next) => {
+    connection.query(sqlGETGameInstanceByID, [req.params.gameID], (err, result) => {
+        if (err) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.status(201);
+            res.set("Content-Type", "application/json");
+            res.json(result);
+        }
+    })
+})
+
+// WORKS IN POSTMAN
 // Patch request to '/v1/game/:gameID/:instanceID
 // Updates information such as scores, drawing board, current words,
 // ect.
@@ -378,37 +393,35 @@ app.post("/:gameID/instance", (req, res, next) => {
 // 201: application/json. Successfully makes changes to the game instance.
 // 500: Internal server error3.
 app.patch("/:gameID/instance", (req, res, next) => {
-    // if (!checkXUserHeader(req)) {
-    //     res.status(401).send("Unauthorized");
-    // } else {
-        // query current game instance and get all data
-        connection.query(sqlGETGameInstanceByID, [req.params.gameID], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.status(500).send("Internal Server Error");
-            } else {
-                // check each variable, if missing insert current data
-                let currDrawer = req.body.currentDrawer ? req.body.currentDrawer : result.currentDrawer;
-                let currRound = req.body.currentRound ? req.body.currentRound : result.currentRound;
-                let currWord = req.body.currentWord ? req.body.currentWord : result.currentWord;
-                let winner = req.body.winner? req.body.winner : result.winner; 
-                // if we want to display the winner, maybe just handle on the frontend
-                let score = req.body.score ? req.body.score : result.score;
+    // query current game instance and get all data
+    connection.query(sqlGETGameInstanceByID, [req.params.gameID], (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Internal Server Error");
+        } else {
+            // check each variable, if missing insert current data
+            let currDrawer = req.body.currentDrawer ? req.body.currentDrawer : result.currentDrawer;
+            let currRound = req.body.currentRound ? req.body.currentRound : result.currentRound;
+            let currWord = req.body.currentWord ? req.body.currentWord : result.currentWord;
+            let winner = req.body.winner? req.body.winner : result.winner; 
+            // if we want to display the winner, maybe just handle on the frontend
+            let score = req.body.score ? req.body.score : result.score;
 
-                // query to make changes in Games_Instance Table
-                connection.query(sqlPATCHGameInstance, [currDrawer, currRound, currWord, winner, score, req.params.gameID], (err, result) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).send("Internal Server Error");
-                    } else {
-                        res.status(201);
-                        res.set("Content-Type", "application/json");
-                        res.json(result);
-                    }
-                })
-            }
-        })
-    // }
+            // query to make changes in Games_Instance Table
+            connection.query(sqlPATCHGameInstance, [currDrawer, currRound, currWord, winner, score, req.params.gameID], (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send("Internal Server Error");
+                } else {
+                    res.status(201);
+                    res.set("Content-Type", "application/json");
+                    res.json(result);
+
+                    // RabbitMQ work here. 
+                }
+            })
+        }
+    })
 })
 
 /////////////////////////////////////
@@ -447,41 +460,30 @@ app.patch(":gameID/instance/board", (req, res, next) => {
 // 201: application/json. Sucecessfully create message
 // 500: Internal server error.
 app.post(":gameID/:instanceID/message", (req, res, next) => {
-    // if (!checkXUserHeader(req)) {
-    //     res.status(401).send("Unauthorized");
-    // } else {
-        // get userID, get gameID
-
-
-        connection.query(sqlPOSTMessage, [userID, req.params.gameID, req.body.messageBody], (err, result) => {
-            if (err) {
-                res.status(500).send("Internal Server Error");
-            } else {
-                res.status(201);
-                res.set("Content-Type", "application/json");
-                res.json(result);
-            }
-        })
-    // }
+    connection.query(sqlPOSTMessage, [userID, req.params.gameID, req.body.messageBody], (err, result) => {
+        if (err) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.status(201);
+            res.set("Content-Type", "application/json");
+            res.json(result);
+        }
+    })
 })
 
 
 // Patch 
 // 
 app.patch(":gameID/:instanceID/message", (req, res, next) => {
-    // if (!checkXUserHeader(req)) {
-    //     res.status(401).send("Unauthorized");
-    // } else {
-        connection.query(sqlPATCHMessage, [req.body.messageBody, req.params.messageID], (err, result) => {
-            if(err) {
-                res.status(500).send("Internal Server Error");
-            } else {
-                res.status(200);
-                res.set("Content-Type", "application/json");
-                res.json(result.messageBody);
-            }
-        })
-    // }
+    connection.query(sqlPATCHMessage, [req.body.messageBody, req.params.messageID], (err, result) => {
+        if(err) {
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.status(200);
+            res.set("Content-Type", "application/json");
+            res.json(result.messageBody);
+        }
+    })
 })
 
 ////////////////////
