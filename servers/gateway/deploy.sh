@@ -6,4 +6,4 @@ docker push magdanat/finalapiserver
 
 # ssh into docker container, run upgrade-server script
 # need to update root IP address to match new DO droplet
-ssh -oStrictHostKeyChecking=no root@167.172.212.87 'bash -s' < ./upgrade-server.sh
+ssh -oStrictHostKeyChecking=no root@138.68.240.198 'bash -s' < ./upgrade-server.sh
