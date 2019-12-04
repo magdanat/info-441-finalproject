@@ -3,8 +3,8 @@ package handlers
 // handle creation of user and input into database
 
 import (
-	"info-441-finalproject/servers/gateway/models/users"
 	"encoding/json"
+	"info-441-finalproject/servers/gateway/models/users"
 	"net/http"
 	"strings"
 )

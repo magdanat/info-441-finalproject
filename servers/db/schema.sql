@@ -1,13 +1,13 @@
---User model
+-- Users Model
 CREATE TABLE IF NOT EXISTS Users (
     UserID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    UserName VARCHAR(255) UNIQUE
+    UserName VARCHAR(255)
 );
 
--- Messages model
+-- Messages Model
 CREATE TABLE IF NOT EXISTS Messages (
     MessageID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     UserID INT,
     FOREIGN KEY (UserID) references Users(UserID),
-    MessageBody VARCHAR(2056)
+    MessageBody VARCHAR(128)
 );

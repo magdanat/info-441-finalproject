@@ -20,9 +20,9 @@ type Notifier struct {
 
 // This is a struct to read our message into
 type msg struct {
-	Type    string  json:"type"
-	Message string  json:"message"
-	UserIDs []int64 json:"userIDs"
+	Type    string  `json:"type"`
+	Message string  `json:"message"`
+	UserIDs []int64 `json:"userIDs"`
 }
 
 // InsertConnection is a thread-safe method for inserting a connection
