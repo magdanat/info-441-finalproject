@@ -8,15 +8,16 @@ export default class Chat extends React.Component {
     this.getMessages = this.getMessages.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
     this.createChatList = this.createChatList.bind(this)
+    this.runScript = this.runScript.bind(this)
     this.state = {
       users: undefined,
       curMessage: "",
       messageList: []
     }
   }
-  ws = new WebSocket('ws://localhost:3000/ws')
+  ws = new WebSocket('wss://fpapi.nathanmagdalera.me:443/ws')
   componentDidMount() {
-    this.getMessages();
+    this.getMessages(); 
     this.ws.onopen = () => {
       // on connecting, do nothing but log it to the console
       console.log('connected')
@@ -24,10 +25,15 @@ export default class Chat extends React.Component {
 
     this.ws.onmessage = evt => {
       // listen to data sent from the websocket server
-      const message = JSON.parse(evt.message)
-      let messageList = this.state.messageList.unshift(evt.message)
+      // const message = JSON.parse(evt.message)
+      let message = JSON.parse(evt.data)
+      let messageList = this.state.messageList
+
+      messageList.unshift({
+        UserName: message.username,
+        MessageBody: message.message
+      })
       this.setState({messageList: messageList})
-      console.log(message)
     }
 
     this.ws.onclose = () => {
@@ -38,8 +44,7 @@ export default class Chat extends React.Component {
   }
 
   getMessages() {
-    console.log(this.props.gameID)
-    fetch('http://localhost:80/v1/games/' + this.props.gameID + "/players", {
+    fetch('https://fpapi.nathanmagdalera.me:443/v1/messages', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -48,17 +53,18 @@ export default class Chat extends React.Component {
     .then((responseJSON) => {
       console.log(responseJSON)
       this.setState({
-        users: responseJSON
+        messageList: responseJSON
       })
     }).catch((err) => console.log(err))
   }
 
-  createChatList() {console.log(this.state.messageList);
+  createChatList() {
+    console.log(this.state.messageList)
     const renderedMessages = this.state.messageList.map((message, index) => {
       return (
         <div id="UserContainer">
-          <p id="Username">{message.username}</p>
-          <p id="Message">{message.message}</p>
+          <p id="Username">{message.UserName}</p>
+          <p id="Message">{message.MessageBody}</p>
         </div>
       )
     })
@@ -71,25 +77,28 @@ export default class Chat extends React.Component {
   }
 
   sendMessage() {
-    console.log(this.state.curMessage)
     // TODO need to send the guess to backend
-    let message = {
-      sender: this.props.userID,
-      username: this.props.username,
-      message: this.state.curMessage,
-      uesrIDs: []
-    }
-    try {
-      this.ws.send(message) //send data to the server
-    } catch (error) {
-        console.log(error) // catch error
-    }
-    let messageList = this.state.messageList
-    messageList.unshift(message)
-    console.log(messageList)
+    console.log(this.props.userID)
+    console.log(this.state.curMessage)
+    fetch("https://fpapi.nathanmagdalera.me:443/v1/messages", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userid: this.props.userID,
+        message: this.state.curMessage,
+        username: this.props.username
+      })
+    }).then((response) => { return response.json()})
+    .then((responseJSON) => {
+      console.log(responseJSON)
+    }).catch((err) => console.log(err))
+
+    // let messageList = this.state.messageList
+    // messageList.unshift(message)
     this.setState({
-      curMessage: "",
-      messageList: messageList
+      curMessage: ""
     })
   }
 
@@ -99,18 +108,28 @@ export default class Chat extends React.Component {
     })
   }
 
+   runScript(event) {
+    if (event.which == 13 || event.keyCode == 13) {
+        this.sendMessage()
+        return false;
+    }
+    return true;
+};
+
   render() {
     return(
       <div id="UserListContainer">
         <h1>Global Chat</h1>
         {this.createChatList()}
         <div id="GuessContent">
-          <input type="text" onChange={this.handleMessageChange} value={this.state.curMessage} style={{width: '50%'}} />
+        
+          <input type="text" onChange={this.handleMessageChange} value={this.state.curMessage} style={{width: '50%'}} onKeyPress={e => this.runScript(e)}/>
           <input
             type="button"
             value="Send"
             onClick={this.sendMessage}
           />
+       
         </div>
       </div>
     )

@@ -16,32 +16,31 @@ export default class GameChat extends React.Component {
       loading: true
     }
     this.handleChangeColor = this.handleChangeColor.bind(this);
-    this.onSubmitGuess = this.onSubmitGuess.bind(this);
-    this.handleGuessChange = this.handleGuessChange.bind(this);
   }
 
   componentDidMount() {
-    if(this.props.location.state != undefined) {
-      if(this.props.location.state.createNewUser != undefined) {
-        fetch('http://localhost:443/v1/users', {
-          method: 'POST',  
-          body: JSON.stringify({username: this.props.location.state.createNewUser}),  
-          headers:{
+    if (this.props.location.state != undefined) {
+      if (this.props.location.state.createNewUser != undefined) {
+        fetch('https://fpapi.nathanmagdalera.me:443/v1/users', {
+          method: 'POST',
+          body: JSON.stringify({ UserName: this.props.location.state.createNewUser }),
+          headers: {
             'Content-Type': 'application/json',
           }
-        }).then((response) => {return response.json()})
-        .then((responseJSON) => {
-          this.setState({
-            username: this.props.location.state.createNewUser,
-            userID: responseJSON.insertId,
-            loading: false
+        }).then((response) => { return response.json() })
+          .then((responseJSON) => {
+            console.log(responseJSON)
+            this.setState({
+              username: this.props.location.state.createNewUser,
+              userID: responseJSON.id,
+              loading: false
+            })
           })
-        })
       } else {
-        this.setState({loading:false})
+        this.setState({ loading: false })
       }
     } else {
-      this.setState({loading:false})
+      this.setState({ loading: false })
     }
     this.setState({
       guesser: false
@@ -53,57 +52,63 @@ export default class GameChat extends React.Component {
       brushColor: color.hex
     })
   }
-
-  handleGuessChange(e) {
-    this.setState({
-      guess: e.target.value
-    })
-  }
-
-  onSubmitGuess() {
-    console.log(this.state.guess)
-    // TODO need to send the guess to backend
-    this.setState({
-      guess: ""
-    })
-  }
-
+ 
   drawBoard() {
-      return (
+    return (
+      <div>
+        <button
+          onClick={() => {
+            localStorage.setItem(
+              "savedDrawing",
+              this.saveableCanvas.getSaveData()
+            );
+          }}
+        >
+          Save
+          </button>
+        <button
+          onClick={() => {
+            this.saveableCanvas.loadSaveData(
+              localStorage.getItem("savedDrawing")
+            );
+          }}
+          style={{marginRight: '30px'}}
+        >
+          Load
+        </button>
+        <button
+          onClick={() => {
+            this.saveableCanvas.undo();
+          }}
+        >
+          Undo
+      </button>
+        <button
+          onClick={() => {
+            this.saveableCanvas.clear();
+          }}
+        >
+          Clear
+      </button>
         <div>
-          <button
-            onClick={() => {
-              this.saveableCanvas.undo();
-            }}
-          >
-            Undo
-      </button>
-          <button
-            onClick={() => {
-              this.saveableCanvas.clear();
-            }}
-          >
-            Clear
-      </button>
-          <div>
-            <label>Brush-Size: </label>
-            <input
-              id="BrushSize"
-              type="number"
-              value={this.state.brushRadius}
-              onChange={e =>
-                this.setState({ brushRadius: parseInt(e.target.value) })
-              }
-            />
-          </div>
-          <CompactPicker
-            color={this.state.brushColor}
-            onChangeComplete={(color) => this.handleChangeColor(color)}
+          <label>Brush-Size: </label>
+          <input
+            id="BrushSize"
+            type="number"
+            value={this.state.brushRadius}
+            onChange={e =>
+              this.setState({ brushRadius: parseInt(e.target.value) })
+            }
           />
         </div>
-      )
-    }
-  
+        <CompactPicker
+          color={this.state.brushColor}
+          onChangeComplete={(color) => this.handleChangeColor(color)}
+        />
+      </div>
+    )
+  }
+
 
   render() {
     if (this.state.loading) {
@@ -122,7 +127,7 @@ export default class GameChat extends React.Component {
           <Header />
           <body id="Content" >
             <div id="GamePage">
-              <Chat gameID={this.props.location.state.gameID} userId={this.state.gameID} username={this.props.location.state.createNewUser}/>
+              <Chat userID={this.state.userID} username={this.props.location.state.createNewUser} />
               <div id="DrawingContent">
                 <div id="Canvas">
                   <CanvasDraw

@@ -1,0 +1,99 @@
+warning: LF will be replaced by CRLF in client/debug.log.
+The file will have its original line endings in your working directory
+[1mdiff --git a/client/debug.log b/client/debug.log[m
+[1mindex 9b84b4d..ca6fea0 100644[m
+[1m--- a/client/debug.log[m
+[1m+++ b/client/debug.log[m
+[36m@@ -21,3 +21,4 @@[m
+ [1204/154001.644:ERROR:crash_report_database_win.cc(428)] unexpected header[m
+ [1204/160503.495:ERROR:crash_report_database_win.cc(428)] unexpected header[m
+ [1205/225846.400:ERROR:crash_report_database_win.cc(428)] unexpected header[m
+[32m+[m[32m[1206/113507.479:ERROR:crash_report_database_win.cc(428)] unexpected header[m
+[1mdiff --git a/client/src/components/Chat.js b/client/src/components/Chat.js[m
+[1mindex 36642cf..fdcde6e 100644[m
+[1m--- a/client/src/components/Chat.js[m
+[1m+++ b/client/src/components/Chat.js[m
+[36m@@ -26,8 +26,10 @@[m [mexport default class Chat extends React.Component {[m
+     this.ws.onmessage = evt => {[m
+       // listen to data sent from the websocket server[m
+       // const message = JSON.parse(evt.message)[m
+[31m-      let messageList = this.state.messageList.unshift(evt.data)[m
+[31m-      this.setState({messageList: messageList})[m
+[32m+[m[32m      console.log("hello")[m
+[32m+[m[32m      console.log(evt.data)[m
+[32m+[m[32m      // let messageList = this.state.messageList.unshift(evt.data)[m
+[32m+[m[32m      // this.setState({messageList: messageList})[m
+     }[m
+ [m
+     this.ws.onclose = () => {[m
+[1mdiff --git a/server/gateway/handlers/websockets.go b/server/gateway/handlers/websockets.go[m
+[1mindex c6ba08c..7118c91 100644[m
+[1m--- a/server/gateway/handlers/websockets.go[m
+[1m+++ b/server/gateway/handlers/websockets.go[m
+[36m@@ -112,6 +112,7 @@[m [mfunc (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *[m
+ [m
+ 	// Insert our connection onto our datastructure for ongoing usage[m
+ 	ctx.InsertConnection(conn)[m
+[32m+[m	[32mfmt.Println("I am inserting a connection")[m
+ [m
+ 	// Invoke a goroutine for handling control messages from this connection[m
+ 	go (func(conn *websocket.Conn, connID int64) {[m
+[36m@@ -119,6 +120,7 @@[m [mfunc (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *[m
+ 		defer ctx.RemoveConnection(connID)[m
+ [m
+ 		for {[m
+[32m+[m
+ 			messageType, p, err := conn.ReadMessage()[m
+ [m
+ 			if messageType == TextMessage || messageType == BinaryMessage {[m
+[36m@@ -130,6 +132,7 @@[m [mfunc (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *[m
+ 				break[m
+ 			} else if err != nil {[m
+ 				fmt.Println("Error reading message.")[m
+[32m+[m				[32mfmt.Println(err)[m
+ 				break[m
+ 			}[m
+ 			// ignore ping and pong messages[m
+[36m@@ -202,6 +205,7 @@[m [mfunc ConnectToRabbitMQ(ctx *HandlerContext) {[m
+ [m
+ // Function that processes the messages from the queue[m
+ func (s *SocketStore) processMessages(ctx *HandlerContext, msgs <-chan amqp.Delivery) {[m
+[32m+[m	[32mfmt.Println("I am processing messages")[m
+ 	for message := range msgs {[m
+ 		message.Ack(false)[m
+ 		messageStruct := &Message{}[m
+[36m@@ -215,10 +219,14 @@[m [mfunc (s *SocketStore) processMessages(ctx *HandlerContext, msgs <-chan amqp.Deli[m
+ [m
+ // Function to write messages to users[m
+ func (s *SocketStore) writeMessages(ctx *HandlerContext, message *Message) {[m
+[32m+[m	[32mfmt.Println("I am writing messages")[m
+[32m+[m
+ 	// var writeError error[m
+ 	// messageType := message.Type[m
+ 	data := message[m
+ 	// username := message.Username[m
+[32m+[m
+[32m+[m	[32mfmt.Println(ctx.SocketStore.Connections)[m
+ 	for _, conn := range ctx.SocketStore.Connections {[m
+ 		fmt.Println("About to send %m", data)[m
+ 		if err := conn.WriteJSON(data); err != nil {[m
+[1mdiff --git a/server/microservices/models/messaging/messages.js b/server/microservices/models/messaging/messages.js[m
+[1mindex 5d83ede..29daf93 100644[m
+[1m--- a/server/microservices/models/messaging/messages.js[m
+[1m+++ b/server/microservices/models/messaging/messages.js[m
+[36m@@ -33,6 +33,7 @@[m [mconst amqp = require('amqplib/callback_api');[m
+ function sendMessageToRabbitMQ(msg) {[m
+     // amqp.connect("amqp://" + process.env.RABBITADDR, (error0, conn) => {[m
+       amqp.connect("amqp://" + "localhost:5672", (error0, conn) => {[m
+[32m+[m[32m          console.log(msg)[m
+         console.log("Sending message to RabbitMQ...");[m
+         if (error0) {[m
+             throw error0;[m
+[36m@@ -60,6 +61,7 @@[m [mfunction sendMessageToRabbitMQ(msg) {[m
+ app.post("/", (req, res, next) => {[m
+     let userid = req.body.userid;[m
+     let message = req.body.message;[m
+[32m+[m[32m    let username = req.body.username;[m
+     console.log(req.body)[m
+     connection.query(sqlPOSTMessage, [message, userid], (err, result) => { [m
+         if (err) { [m

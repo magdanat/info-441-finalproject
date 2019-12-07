@@ -26,14 +26,15 @@ export default class Home extends React.Component {
           <div id="SignUpContainer">
             <h2>Welcome to UW Scribble!</h2>
             <p>
-              UW scribble is a simple drawing game like pictionary. To play, simply enter your username for this session and hit the play button.
+              UW scribble is a simple drawing application which allows users to messages eachother. When using the application, you are given
+              an individual drawing board and a global chat where you can send and view messages from other users.
             </p>
             <form onSubmit={this.onClickPlay}>
-              <Form.Group controlId="email" bsSize="large">
+              <Form.Group controlId="text" bsSize="large">
                 <Form.Label>Username:</Form.Label>
                 <Form.Control
                   autoFocus
-                  type="email"
+                  type="text"
 
                   onChange={e => this.handleUserNameChange(e.target.value)}
                 />
