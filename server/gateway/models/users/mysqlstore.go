@@ -25,6 +25,5 @@ func (store *MySQLStore) Insert(user *User) (*User, error) {
 	}
 	user.ID = id
 
-	fmt.Println("We are inserting a user.")
 	return user, nil
 }

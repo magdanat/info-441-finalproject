@@ -30,7 +30,6 @@ func main() {
 	}
 
 	// Creating a connection to the database
-	// dsn := fmt.Sprintf(os.Getenv("DSN"), os.Getenv("MYSQL_ROOT_PASSWORD"))
 	dsn := os.Getenv("DSN")
 
 	db, err := sql.Open("mysql", dsn)
@@ -74,9 +73,6 @@ func main() {
 
 	wrappedMux := handlers.Response(mux)
 
-	// USE THIS ADDR FOR POSTMAN
-	// log.Fatal(http.ListenAndServe(addr, wrappedMux))
-	// log.Fatal(http.ListenAndServe(addr, mux))
 	log.Fatal(http.ListenAndServeTLS(addr, tlsCertPath, tlsKeyPath, wrappedMux))
 }
 

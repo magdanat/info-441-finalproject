@@ -103,7 +103,6 @@ var upgrader = websocket.Upgrader{
 // WebSocketConnectionHandler does...
 func (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	// handle the websocket handshake
-	fmt.Println("We are in websocketconnectionhandler")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, "Failed to open websocket connection", 401)
@@ -112,7 +111,6 @@ func (ctx *HandlerContext) WebSocketConnectionHandler(w http.ResponseWriter, r *
 
 	// Insert our connection onto our datastructure for ongoing usage
 	ctx.InsertConnection(conn)
-	fmt.Println("I am inserting a connection")
 
 	// Invoke a goroutine for handling control messages from this connection
 	go (func(conn *websocket.Conn, connID int64) {
@@ -189,17 +187,6 @@ func ConnectToRabbitMQ(ctx *HandlerContext) {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	// forever := make(chan bool)
-
-	// go func() {
-	// 	for d := range msgs {
-	// 		log.Printf("Received a message: %s", d.Body)
-	// 	}
-	// }()
-
-	// log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	// <-forever
-
 	go ctx.SocketStore.processMessages(ctx, msgs)
 }
 
@@ -219,12 +206,7 @@ func (s *SocketStore) processMessages(ctx *HandlerContext, msgs <-chan amqp.Deli
 
 // Function to write messages to users
 func (s *SocketStore) writeMessages(ctx *HandlerContext, message *Message) {
-	fmt.Println("I am writing messages")
-
-	// var writeError error
-	// messageType := message.Type
 	data := message
-	// username := message.Username
 
 	fmt.Println(ctx.SocketStore.Connections)
 	for _, conn := range ctx.SocketStore.Connections {
@@ -232,9 +214,6 @@ func (s *SocketStore) writeMessages(ctx *HandlerContext, message *Message) {
 		if err := conn.WriteJSON(data); err != nil {
 			fmt.Println("Error writing message to WebSocket connection.", err)
 		}
-		// if writeError != nil {
-		// 	return writeError
-		// }
 	}
 }
 

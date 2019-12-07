@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -21,7 +20,6 @@ func (c *CorsMW1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	fmt.Println("we are in cors.")
 
 	c.Handler.ServeHTTP(w, r)
 }

@@ -7,13 +7,11 @@ import (
 	"info441testrepo/server/gateway/models/users"
 	"net/http"
 	"strings"
-	"fmt"
 )
 
 //UsersHandler handles requests to create new user accounts
 // only has one thing in body -- username
 func (ctx *HandlerContext) UsersHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("test")
 	if r.Method == http.MethodPost {
 		contentType := r.Header.Get("Content-Type")
 		if strings.HasPrefix(contentType, "application/json") {
