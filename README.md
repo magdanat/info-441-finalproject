@@ -10,7 +10,7 @@ Our audience would want to use our application primarily for fun. Because our pr
 
 As developers we want to build this application because we think this will be a great way to encompass all the skills we have learned in class so far. We particularly chose to create a application because of how the flow of data is going to be handled between users. The data flow for messaging will involve both storing messages in the database and utilizing websockets and **rabbitMQ** in order to relay real-time messages. Our implementation will consist of **React** for our frontend, Google's **Go** for our backend, and finally **MySQL** for our backend database with the addition of **websockets**, **RabbitMQ**, and other libraries.
 
-
+![](project_proposal.png)
 
 ## Technical Description
 
